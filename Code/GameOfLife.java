@@ -14,8 +14,9 @@ import javax.swing.UIManager;
 import javax.swing.BorderFactory;
 import java.awt.Toolkit;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Font;
 import java.awt.Color;
 import java.lang.Thread;
@@ -45,7 +46,7 @@ public class GameOfLife {
 		JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 0);
 		slider.setMajorTickSpacing(10);
 		slider.setPaintTicks(true);
-	    slider.setLabelTable(slider.createStandardLabels(10));
+		slider.setLabelTable(slider.createStandardLabels(10));
 		JButton startButton = new JButton("Start Simulation");
 		startButton.setFont(new Font("Serif", Font.BOLD, 17));
 		JLabel iterationLabel = new JLabel("Iteration: ");
@@ -63,12 +64,28 @@ public class GameOfLife {
 		/**
 		* add a grid to center panel of the main frame.
 		*/
-		JPanel centerPanel = new JPanel();
+		JPanel centerPanel = new JPanel(new GridLayout(10, 10));
 		centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+///////////////////////////////////////////////////////////////////////////////
+		for(int i=0; i<100; i++) {
+			JPanel cell = new JPanel();
+			cell.setBackground(Color.GRAY);
+			cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			centerPanel.add(cell);
+		}
 		mainFrame.add(centerPanel, BorderLayout.CENTER);
+//////////////////////////////////////////////////////////////////////////////
 
-
+		/**
+		* Show the main frame and everything that was added to it.
+		*/
 		mainFrame.setVisible(true);
+
+		/**
+		* Set up world and cells here.
+		* Threading happens next
+		*/
 	}
 
 	public static void main(String[] args) throws Exception{
