@@ -29,6 +29,8 @@ import java.lang.Thread;
 
 public class GameOfLife {
 		
+	final JPanel[][] world = new JPanel[60][60];
+
 	public static void main(String[] args) throws Exception {
 
 		/**HANDLE ALL NECESSARY EXCEPTIONS**/
@@ -36,12 +38,10 @@ public class GameOfLife {
 		new GameOfLife();
 	}
 
-	public GameOfLife() throws Exception {
+	public GameOfLife() {
 
-		/**HANDLE ALL NECESSARY EXCEPTIONS**/
 		final JFrame mainFrame;
 		final JPanel northBorderPanel, centerPanel, southBorderPanel;
-		final JPanel[][] world = new JPanel[60][60];
 		final JLabel iterationLabel, simSpeedLabel;
 		final JButton startButton, resetSimButton;
 		final JSlider slider;
@@ -114,14 +114,44 @@ public class GameOfLife {
 
 				/**
 				* Start the simulation here.
-				* Iterate through the world and change the colors of the cells
-				* based on the 4 simple rules of Conway's Game of Life.
+				* Iterate through the world and change the colors (states) of
+				* the cells based on the 4 simple rules of Conway's Game of Life.
 				*/
-				System.out.println( getState(world[0][0]) );
+				for (int i=0; i<100; i++) {
+					for (int x=0; x<60; x++) {
+						for (int y=0; y<60; y++) {
+							if ( getState(world[x][y]) == State.DEAD ) {
+								/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
+								if (getNumLiveNeighbors(x, y) == 3) {
+									world[x][y].setBackground(Color.GREEN);
+								}
+							}
 
+							if ( getState(world[x][y]) == State.ALIVE ) {
+								/**2. Any live cell with fewer than two live neighbours dies, as if caused by under-population.**/
+								if (getNumLiveNeighbors(x, y) < 2) {
+									world[x][y].setBackground(Color.darkGray);
+								}
 
+								/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
+								if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
+									world[x][y].setBackground(Color.GREEN);
+								}
 
-
+								/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
+								if (getNumLiveNeighbors(x, y) > 3) {
+									world[x][y].setBackground(Color.darkGray);
+								}								
+							}
+						}
+					}
+					iterationLabel.setText("Iteration: " + i);
+//					try {
+//						Thread.sleep(100);
+//					} catch(InterruptedException ex) {
+//						Thread.currentThread().interrupt();
+//					}
+				}
 			}
 		});
 
@@ -133,6 +163,7 @@ public class GameOfLife {
 						world[x][y].setBackground(Color.darkGray);
 					}
 				}
+				iterationLabel.setText("Iteration: 0");
 			}
 		});
 
@@ -158,6 +189,25 @@ public class GameOfLife {
 				});
 			}
 		}
+	}
+
+	/********************************************************************/
+	/***********************PRIVATE HELPER METHODS***********************/
+	/********************************************************************/
+
+	/**
+	* helper method to get the number of live neighbors for a given cell.
+	*/
+	private int getNumLiveNeighbors(int x, int y) {
+		int[] r_delta = {-1,-1,-1, 0, 0, 1, 1, 1};
+		int[] c_delta = {-1, 0, 1,-1, 1,-1, 0, 1};
+		int numLiveNeighbors = 0;
+		for (int r=0, c=0; r<8; r++, c++) {
+			if ( x+r_delta[r] != -1 && x+r_delta[r] != 60 && y+c_delta[c] != -1 && y+c_delta[c] != 60) {
+				if ( getState( world[x+r_delta[r]][y+c_delta[c]] ) == State.ALIVE ) { numLiveNeighbors++; }
+			}
+		}
+		return numLiveNeighbors;
 	}
 
 	/**
