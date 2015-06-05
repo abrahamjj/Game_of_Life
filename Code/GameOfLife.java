@@ -117,32 +117,51 @@ public class GameOfLife {
 				* Iterate through the world and change the colors (states) of
 				* the cells based on the 4 simple rules of Conway's Game of Life.
 				*/
-				for (int i=0; i<100; i++) {
-					for (int x=0; x<60; x++) {
-						for (int y=0; y<60; y++) {
+				for (int i=0; i<1; i++) {
+
+					JPanel[][] new_world = new JPanel[60][60];
+					for (int y=0; y<60; y++) {					
+						for (int x=0; x<60; x++) {
+							new_world[x][y] = new JPanel();
+							new_world[x][y].setBackground(Color.darkGray);
+							new_world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+						}
+					}
+
+					for (int y=0; y<60; y++) {
+						for (int x=0; x<60; x++) {
 							if ( getState(world[x][y]) == State.DEAD ) {
 								/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 								if (getNumLiveNeighbors(x, y) == 3) {
-									world[x][y].setBackground(Color.GREEN);
+									new_world[x][y].setBackground(Color.GREEN);
 								}
 							}
 
 							if ( getState(world[x][y]) == State.ALIVE ) {
 								/**2. Any live cell with fewer than two live neighbours dies, as if caused by under-population.**/
 								if (getNumLiveNeighbors(x, y) < 2) {
-									world[x][y].setBackground(Color.darkGray);
+									new_world[x][y].setBackground(Color.darkGray);
 								}
 
 								/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
 								if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
-									world[x][y].setBackground(Color.GREEN);
+									new_world[x][y].setBackground(Color.GREEN);
 								}
 
 								/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
 								if (getNumLiveNeighbors(x, y) > 3) {
-									world[x][y].setBackground(Color.darkGray);
+									new_world[x][y].setBackground(Color.darkGray);
 								}								
 							}
+						}
+					}
+
+					for (int y=0; y<60; y++) {					
+						for (int x=0; x<60; x++) {
+							if (new_world[x][y].getBackground() == Color.darkGray)
+								world[x][y].setBackground(Color.darkGray);
+							else
+								world[x][y].setBackground(Color.GREEN);								
 						}
 					}
 					iterationLabel.setText("Iteration: " + i);
@@ -158,8 +177,8 @@ public class GameOfLife {
 		resetSimButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
 				startButton.setEnabled(true);
-				for (int x=0; x<60; x++) {
-					for (int y=0; y<60; y++) {
+				for (int y=0; y<60; y++) {
+					for (int x=0; x<60; x++) {
 						world[x][y].setBackground(Color.darkGray);
 					}
 				}
@@ -167,8 +186,8 @@ public class GameOfLife {
 			}
 		});
 
-		for (int x=0; x<60; x++) {
-			for (int y=0; y<60; y++) {
+		for (int y=0; y<60; y++) {
+			for (int x=0; x<60; x++) {
 				final int xx = x;
 				final int yy = y;
 				world[xx][yy].addMouseListener(new MouseAdapter(){
