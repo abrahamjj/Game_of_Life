@@ -1,10 +1,9 @@
 /**
-* A GUI implementaiton of Conways's Game of Life in Java
+* My attemp at implementing a Conways's Game of Life simulator in in Java
 *
 * @author John Abraham
 */
 
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -12,6 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.UIManager;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -19,18 +21,38 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.Thread;
 
 public class GameOfLife {
+		
+	public static void main(String[] args) throws Exception {
 
-	public GameOfLife() {
+		/**HANDLE ALL NECESSARY EXCEPTIONS**/
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		new GameOfLife();
+	}
+
+	public GameOfLife() throws Exception {
+
+		/**HANDLE ALL NECESSARY EXCEPTIONS**/
+		final JFrame mainFrame;
+		final JPanel northBorderPanel, centerPanel, southBorderPanel;
+		final JPanel[][] world = new JPanel[60][60];
+		final JLabel iterationLabel, simSpeedLabel;
+		final JButton startButton, resetSimButton;
+		final JSlider slider;
 
 		/**
 		* Set frame size, default close operation, and location.
 		*/
-		JFrame mainFrame = new JFrame("Conway's Game of Life Simulation");
+		mainFrame = new JFrame("Conway's Game of Life Simulation");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setLayout(new BorderLayout());
+		mainFrame.setResizable(false);
 		mainFrame.setSize(700, 700);
 		centerWindow(mainFrame);
 
@@ -39,68 +61,120 @@ public class GameOfLife {
 		* Add the configuration tool JPanel to the south border of the main frame.
 		* Add a JLabel to the north border to keep track of iterations.
 		*/
-		JPanel southBorderPanel = new JPanel(new FlowLayout());
-		JPanel northBorderPanel = new JPanel(new FlowLayout());
-		JLabel simSpeedLabel = new JLabel("Set Simulation Speed: ");
+		southBorderPanel = new JPanel(new FlowLayout());
+		northBorderPanel = new JPanel(new FlowLayout());
+		simSpeedLabel = new JLabel("Set Simulation Speed: ");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 17));
-		JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 0);
-		slider.setMajorTickSpacing(10);
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
+		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
-		JButton startButton = new JButton("Start Simulation");
+		startButton = new JButton("Start Simulation");
 		startButton.setFont(new Font("Serif", Font.BOLD, 17));
-		JLabel iterationLabel = new JLabel("Iteration: ");
+		resetSimButton = new JButton("Reset");
+		resetSimButton.setFont(new Font("Serif", Font.BOLD, 17));
+		iterationLabel = new JLabel("Iteration: 0");
 		iterationLabel.setFont(new Font("Serif", Font.BOLD, 17));
-		JLabel iterationNumLabel = new JLabel("0");
-		iterationNumLabel.setFont(new Font("Serif", Font.BOLD, 17));
 		southBorderPanel.add(simSpeedLabel);
 		southBorderPanel.add(slider);
 		southBorderPanel.add(startButton);
+		southBorderPanel.add(resetSimButton);
 		northBorderPanel.add(iterationLabel);
-		northBorderPanel.add(iterationNumLabel);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
 		mainFrame.add(southBorderPanel, BorderLayout.SOUTH);
 
 		/**
-		* add a grid to center panel of the main frame.
+		* Add a grid to center panel of the main frame as a startup default.
+		* default centerPanel on each iteration after simulation is started.
 		*/
-		JPanel centerPanel = new JPanel(new GridLayout(10, 10));
-		centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-
-///////////////////////////////////////////////////////////////////////////////
-		for(int i=0; i<100; i++) {
-			JPanel cell = new JPanel();
-			cell.setBackground(Color.GRAY);
-			cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			centerPanel.add(cell);
+		centerPanel = new JPanel(new GridLayout(60, 60));
+		for(int x=0; x<60; x++) {
+			for(int y=0; y<60; y++) {
+				world[x][y] = new JPanel();
+				world[x][y].setBackground(Color.darkGray);
+				world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				centerPanel.add(world[x][y]);
+			}
 		}
 		mainFrame.add(centerPanel, BorderLayout.CENTER);
-//////////////////////////////////////////////////////////////////////////////
 
 		/**
 		* Show the main frame and everything that was added to it.
 		*/
 		mainFrame.setVisible(true);
 
-		/**
-		* Set up world and cells here.
-		* Threading happens next
-		*/
-	}
 
-	public static void main(String[] args) throws Exception{
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
+		/********************************************************************/
+		/********************EVENT LISTENERS AND HANDLERS********************/
+		/********************************************************************/
+		startButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent unused) {
+				startButton.setEnabled(false);
+
+				/**
+				* Start the simulation here.
+				* Iterate through the world and change the colors of the cells
+				* based on the 4 simple rules of Conway's Game of Life.
+				*/
+				System.out.println( getState(world[0][0]) );
+
+
+
+
+			}
+		});
+
+		resetSimButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent unused) {
+				startButton.setEnabled(true);
+				for (int x=0; x<60; x++) {
+					for (int y=0; y<60; y++) {
+						world[x][y].setBackground(Color.darkGray);
+					}
+				}
+			}
+		});
+
+		for (int x=0; x<60; x++) {
+			for (int y=0; y<60; y++) {
+				final int xx = x;
+				final int yy = y;
+				world[xx][yy].addMouseListener(new MouseAdapter(){
+					@Override
+					public void mouseEntered(MouseEvent me) {
+						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
+							world[xx][yy].setBackground(Color.GREEN);
+						}
+					}
+
+					public void mousePressed(MouseEvent me) {
+						if(world[xx][yy].getBackground() == Color.darkGray) {
+							world[xx][yy].setBackground(Color.GREEN);
+						} else {
+							world[xx][yy].setBackground(Color.darkGray);
+						}
+					}
+				});
+			}
 		}
-
-		new GameOfLife();
 	}
 
-	private void centerWindow(JFrame f) {
+	/**
+	* helper method that returns the state of the cell based
+	* on the color of the JPnael representing the cell.
+	*/
+	private State getState(JPanel cell) {
+		if(cell.getBackground().equals(Color.GREEN))
+			return State.ALIVE;
+		else
+			return State.DEAD;
+	}
 
+	/**
+	* Private helper mehtod that centers the main frame in the middle of the screen.
+	*/
+	private void centerWindow(JFrame f) {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - f.getWidth()) / 2);
 		int y = (int) ((dimension.getHeight() - f.getHeight()) / 2);
