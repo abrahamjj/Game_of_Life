@@ -14,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -31,10 +32,20 @@ public class GameOfLife {
 		
 	final JPanel[][] world = new JPanel[60][60];
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
-		/**HANDLE ALL NECESSARY EXCEPTIONS**/
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException ee) {
+			ee.printStackTrace();
+		} catch (IllegalAccessException eee) {
+			eee.printStackTrace();
+		} catch (UnsupportedLookAndFeelException eeee) {
+			eeee.printStackTrace();
+		}
+
 		new GameOfLife();
 	}
 
@@ -43,7 +54,7 @@ public class GameOfLife {
 		final JFrame mainFrame;
 		final JPanel northBorderPanel, centerPanel, southBorderPanel;
 		final JLabel iterationLabel, simSpeedLabel;
-		final JButton startButton, resetSimButton;
+		final JButton stepSimbutton, runSimButton, clearSimButton;
 		final JSlider slider;
 
 		/**
@@ -69,16 +80,19 @@ public class GameOfLife {
 		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
-		startButton = new JButton("Start Simulation");
-		startButton.setFont(new Font("Serif", Font.BOLD, 17));
-		resetSimButton = new JButton("Reset");
-		resetSimButton.setFont(new Font("Serif", Font.BOLD, 17));
+		stepSimbutton = new JButton("Step");
+		stepSimbutton.setFont(new Font("Serif", Font.BOLD, 17));
+		runSimButton = new JButton("Run");
+		runSimButton.setFont(new Font("Serif", Font.BOLD, 17));
+		clearSimButton = new JButton("Clear");
+		clearSimButton.setFont(new Font("Serif", Font.BOLD, 17));
 		iterationLabel = new JLabel("Iteration: 0");
 		iterationLabel.setFont(new Font("Serif", Font.BOLD, 17));
 		southBorderPanel.add(simSpeedLabel);
 		southBorderPanel.add(slider);
-		southBorderPanel.add(startButton);
-		southBorderPanel.add(resetSimButton);
+		southBorderPanel.add(stepSimbutton);
+		southBorderPanel.add(runSimButton);
+		southBorderPanel.add(clearSimButton);
 		northBorderPanel.add(iterationLabel);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
 		mainFrame.add(southBorderPanel, BorderLayout.SOUTH);
@@ -106,77 +120,25 @@ public class GameOfLife {
 
 
 		/********************************************************************/
-		/********************EVENT LISTENERS AND HANDLERS********************/
+		/*********EVENT LISTENERS AND HANDLERS (ANONYMOUS CLASSES)***********/
 		/********************************************************************/
-		startButton.addActionListener(new ActionListener() {
+		stepSimbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				startButton.setEnabled(false);
-
-				/**
-				* Start the simulation here.
-				* Iterate through the world and change the colors (states) of
-				* the cells based on the 4 simple rules of Conway's Game of Life.
-				*/
-				for (int i=0; i<1; i++) {
-
-					JPanel[][] new_world = new JPanel[60][60];
-					for (int y=0; y<60; y++) {					
-						for (int x=0; x<60; x++) {
-							new_world[x][y] = new JPanel();
-							new_world[x][y].setBackground(Color.darkGray);
-							new_world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-						}
-					}
-
-					for (int y=0; y<60; y++) {
-						for (int x=0; x<60; x++) {
-							if ( getState(world[x][y]) == State.DEAD ) {
-								/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
-								if (getNumLiveNeighbors(x, y) == 3) {
-									new_world[x][y].setBackground(Color.GREEN);
-								}
-							}
-
-							if ( getState(world[x][y]) == State.ALIVE ) {
-								/**2. Any live cell with fewer than two live neighbours dies, as if caused by under-population.**/
-								if (getNumLiveNeighbors(x, y) < 2) {
-									new_world[x][y].setBackground(Color.darkGray);
-								}
-
-								/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
-								if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
-									new_world[x][y].setBackground(Color.GREEN);
-								}
-
-								/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
-								if (getNumLiveNeighbors(x, y) > 3) {
-									new_world[x][y].setBackground(Color.darkGray);
-								}								
-							}
-						}
-					}
-
-					for (int y=0; y<60; y++) {					
-						for (int x=0; x<60; x++) {
-							if (new_world[x][y].getBackground() == Color.darkGray)
-								world[x][y].setBackground(Color.darkGray);
-							else
-								world[x][y].setBackground(Color.GREEN);								
-						}
-					}
-					iterationLabel.setText("Iteration: " + i);
-//					try {
-//						Thread.sleep(100);
-//					} catch(InterruptedException ex) {
-//						Thread.currentThread().interrupt();
-//					}
-				}
+				iterate();
 			}
 		});
 
-		resetSimButton.addActionListener(new ActionListener() {
+		runSimButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				startButton.setEnabled(true);
+				/**CONVERT TO INFINITE LOOP AND THREAD THE LOOP**/
+				for (int i=0; i<100; i++) {
+					iterate();
+				}
+			}
+		});		
+
+		clearSimButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent unused) {
 				for (int y=0; y<60; y++) {
 					for (int x=0; x<60; x++) {
 						world[x][y].setBackground(Color.darkGray);
@@ -213,11 +175,65 @@ public class GameOfLife {
 	/********************************************************************/
 	/***********************PRIVATE HELPER METHODS***********************/
 	/********************************************************************/
+	/**
+	* Start the simulation here. This is a one-step iteration.
+	* Iterate through the world and change the colors (states) of
+	* the cells based on the 4 simple rules of Conway's Game of Life.
+	*/
+	private void iterate() {
+
+		JPanel[][] new_world = new JPanel[60][60];
+		for (int y=0; y<60; y++) {					
+			for (int x=0; x<60; x++) {
+				new_world[x][y] = new JPanel();
+				new_world[x][y].setBackground(Color.darkGray);
+				new_world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			}
+		}
+
+		for (int y=0; y<60; y++) {
+			for (int x=0; x<60; x++) {
+				if ( getState(world[x][y]) == State.DEAD ) {
+					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
+					if (getNumLiveNeighbors(x, y) == 3) {
+						new_world[x][y].setBackground(Color.GREEN);
+					}
+				}
+
+				if ( getState(world[x][y]) == State.ALIVE ) {
+					/**2. Any live cell with fewer than two live neighbours dies, as if caused by under-population.**/
+					if (getNumLiveNeighbors(x, y) < 2) {
+						new_world[x][y].setBackground(Color.darkGray);
+					}
+
+					/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
+					if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
+						new_world[x][y].setBackground(Color.GREEN);
+					}
+
+					/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
+					if (getNumLiveNeighbors(x, y) > 3) {
+						new_world[x][y].setBackground(Color.darkGray);
+					}
+				}
+			}
+		}
+
+		for (int y=0; y<60; y++) {
+			for (int x=0; x<60; x++) {
+				if (new_world[x][y].getBackground() == Color.darkGray)
+					world[x][y].setBackground(Color.darkGray);
+				else
+					world[x][y].setBackground(Color.GREEN);
+			}
+		}
+	}
 
 	/**
 	* helper method to get the number of live neighbors for a given cell.
 	*/
 	private int getNumLiveNeighbors(int x, int y) {
+
 		int[] r_delta = {-1,-1,-1, 0, 0, 1, 1, 1};
 		int[] c_delta = {-1, 0, 1,-1, 1,-1, 0, 1};
 		int numLiveNeighbors = 0;
@@ -234,6 +250,7 @@ public class GameOfLife {
 	* on the color of the JPnael representing the cell.
 	*/
 	private State getState(JPanel cell) {
+
 		if(cell.getBackground().equals(Color.GREEN))
 			return State.ALIVE;
 		else
@@ -244,6 +261,7 @@ public class GameOfLife {
 	* Private helper mehtod that centers the main frame in the middle of the screen.
 	*/
 	private void centerWindow(JFrame f) {
+
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - f.getWidth()) / 2);
 		int y = (int) ((dimension.getHeight() - f.getHeight()) / 2);
