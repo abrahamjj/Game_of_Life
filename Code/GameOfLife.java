@@ -1,5 +1,5 @@
 /**
-* My attemp at implementing a Conways's Game of Life simulator in in Java
+* My attemp at implementing a Conways's Game of Life simulator in Java
 *
 * @author John Abraham
 */
@@ -31,6 +31,7 @@ import java.lang.Thread;
 public class GameOfLife {
 		
 	final JPanel[][] world = new JPanel[60][60];
+	final Color darkGreen = new Color(0, 200, 0);
 
 	public static void main(String[] args) {
 
@@ -74,7 +75,7 @@ public class GameOfLife {
 		*/
 		southBorderPanel = new JPanel(new FlowLayout());
 		northBorderPanel = new JPanel(new FlowLayout());
-		simSpeedLabel = new JLabel("Set Simulation Speed: ");
+		simSpeedLabel = new JLabel("Simulation Speed: ");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 17));
 		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
 		slider.setMajorTickSpacing(1);
@@ -99,7 +100,7 @@ public class GameOfLife {
 
 		/**
 		* Add a grid to center panel of the main frame as a startup default.
-		* default centerPanel on each iteration after simulation is started.
+		* Update centerPanel on each iteration after simulation is started.
 		*/
 		centerPanel = new JPanel(new GridLayout(60, 60));
 		for(int x=0; x<60; x++) {
@@ -116,7 +117,6 @@ public class GameOfLife {
 		* Show the main frame and everything that was added to it.
 		*/
 		mainFrame.setVisible(true);
-
 
 
 		/********************************************************************/
@@ -156,13 +156,13 @@ public class GameOfLife {
 					@Override
 					public void mouseEntered(MouseEvent me) {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
-							world[xx][yy].setBackground(Color.GREEN);
+							world[xx][yy].setBackground(darkGreen);
 						}
 					}
 
 					public void mousePressed(MouseEvent me) {
 						if(world[xx][yy].getBackground() == Color.darkGray) {
-							world[xx][yy].setBackground(Color.GREEN);
+							world[xx][yy].setBackground(darkGreen);
 						} else {
 							world[xx][yy].setBackground(Color.darkGray);
 						}
@@ -176,7 +176,7 @@ public class GameOfLife {
 	/***********************PRIVATE HELPER METHODS***********************/
 	/********************************************************************/
 	/**
-	* Start the simulation here. This is a one-step iteration.
+	* Start the simulation here. This is a single-step iteration.
 	* Iterate through the world and change the colors (states) of
 	* the cells based on the 4 simple rules of Conway's Game of Life.
 	*/
@@ -196,7 +196,7 @@ public class GameOfLife {
 				if ( getState(world[x][y]) == State.DEAD ) {
 					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 					if (getNumLiveNeighbors(x, y) == 3) {
-						new_world[x][y].setBackground(Color.GREEN);
+						new_world[x][y].setBackground(darkGreen);
 					}
 				}
 
@@ -208,7 +208,7 @@ public class GameOfLife {
 
 					/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
 					if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
-						new_world[x][y].setBackground(Color.GREEN);
+						new_world[x][y].setBackground(darkGreen);
 					}
 
 					/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
@@ -224,7 +224,7 @@ public class GameOfLife {
 				if (new_world[x][y].getBackground() == Color.darkGray)
 					world[x][y].setBackground(Color.darkGray);
 				else
-					world[x][y].setBackground(Color.GREEN);
+					world[x][y].setBackground(darkGreen);
 			}
 		}
 	}
@@ -251,7 +251,7 @@ public class GameOfLife {
 	*/
 	private State getState(JPanel cell) {
 
-		if(cell.getBackground().equals(Color.GREEN))
+		if(cell.getBackground().equals(darkGreen))
 			return State.ALIVE;
 		else
 			return State.DEAD;
