@@ -29,8 +29,10 @@ import java.awt.event.MouseEvent;
 import java.lang.Thread;
 
 public class GameOfLife {
-		
-	final JPanel[][] world = new JPanel[60][60];
+
+	/**Global variables**/
+	final int worldSize = 50;
+	final JPanel[][] world = new JPanel[worldSize][worldSize];
 	final Color darkGreen = new Color(0, 200, 0);
 
 	public static void main(String[] args) {
@@ -52,10 +54,10 @@ public class GameOfLife {
 
 	public GameOfLife() {
 
-		final JFrame mainFrame;
+		JFrame mainFrame;
 		final JPanel northBorderPanel, centerPanel, southBorderPanel;
 		final JLabel iterationLabel, simSpeedLabel;
-		final JButton stepSimbutton, runSimButton, clearSimButton;
+		final JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
 		final JSlider slider;
 
 		/**
@@ -77,9 +79,10 @@ public class GameOfLife {
 		northBorderPanel = new JPanel(new FlowLayout());
 		simSpeedLabel = new JLabel("Simulation Speed: ");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 17));
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
-		slider.setMajorTickSpacing(1);
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 1000, 1000);
+		slider.setMajorTickSpacing(100);
 		slider.setPaintTicks(true);
+        slider.setInverted(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
 		stepSimbutton = new JButton("Step");
 		stepSimbutton.setFont(new Font("Serif", Font.BOLD, 17));
@@ -87,6 +90,8 @@ public class GameOfLife {
 		runSimButton.setFont(new Font("Serif", Font.BOLD, 17));
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 17));
+		stopSimulation = new JButton("Stop");
+		stopSimulation.setFont(new Font("Serif", Font.BOLD, 17));
 		iterationLabel = new JLabel("Iteration: 0");
 		iterationLabel.setFont(new Font("Serif", Font.BOLD, 17));
 		southBorderPanel.add(simSpeedLabel);
@@ -94,6 +99,7 @@ public class GameOfLife {
 		southBorderPanel.add(stepSimbutton);
 		southBorderPanel.add(runSimButton);
 		southBorderPanel.add(clearSimButton);
+		southBorderPanel.add(stopSimulation);
 		northBorderPanel.add(iterationLabel);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
 		mainFrame.add(southBorderPanel, BorderLayout.SOUTH);
@@ -102,9 +108,9 @@ public class GameOfLife {
 		* Add a grid to center panel of the main frame as a startup default.
 		* Update centerPanel on each iteration after simulation is started.
 		*/
-		centerPanel = new JPanel(new GridLayout(60, 60));
-		for(int x=0; x<60; x++) {
-			for(int y=0; y<60; y++) {
+		centerPanel = new JPanel(new GridLayout(worldSize, worldSize));
+		for(int x=0; x<worldSize; x++) {
+			for(int y=0; y<worldSize; y++) {
 				world[x][y] = new JPanel();
 				world[x][y].setBackground(Color.darkGray);
 				world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -124,23 +130,41 @@ public class GameOfLife {
 		/********************************************************************/
 		stepSimbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				iterate();
+				updateWorld();
 			}
 		});
 
 		runSimButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				/**CONVERT TO INFINITE LOOP AND THREAD THE LOOP**/
-				for (int i=0; i<100; i++) {
-					iterate();
-				}
+				/**PUT THIS LOOP IN SEPARATE THREAD**/
+				/**
+				* pausing the main thread by simply using Thread.Sleep() here
+				* does not work. The GUI will not update properly because
+				* UI events in swing are handled by a single thread, and we
+				* don't want to cause that thread to get stuck in a loop.
+				* Calling updateWorld in a separate thread would fix the
+				* problem.
+				*/
+				new Thread(new Runnable() {
+					public void run() {
+						while(true) {
+							updateWorld();
+							/**pause this seperate thread**/
+							try {
+								Thread.sleep(slider.getValue());
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}).start();
 			}
 		});		
 
 		clearSimButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				for (int y=0; y<60; y++) {
-					for (int x=0; x<60; x++) {
+				for (int y=0; y<worldSize; y++) {
+					for (int x=0; x<worldSize; x++) {
 						world[x][y].setBackground(Color.darkGray);
 					}
 				}
@@ -148,8 +172,8 @@ public class GameOfLife {
 			}
 		});
 
-		for (int y=0; y<60; y++) {
-			for (int x=0; x<60; x++) {
+		for (int y=0; y<worldSize; y++) {
+			for (int x=0; x<worldSize; x++) {
 				final int xx = x;
 				final int yy = y;
 				world[xx][yy].addMouseListener(new MouseAdapter(){
@@ -180,19 +204,19 @@ public class GameOfLife {
 	* Iterate through the world and change the colors (states) of
 	* the cells based on the 4 simple rules of Conway's Game of Life.
 	*/
-	private void iterate() {
+	private void updateWorld() {
 
-		JPanel[][] new_world = new JPanel[60][60];
-		for (int y=0; y<60; y++) {					
-			for (int x=0; x<60; x++) {
+		JPanel[][] new_world = new JPanel[worldSize][worldSize];
+		for (int y=0; y<worldSize; y++) {
+			for (int x=0; x<worldSize; x++) {
 				new_world[x][y] = new JPanel();
 				new_world[x][y].setBackground(Color.darkGray);
 				new_world[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			}
 		}
 
-		for (int y=0; y<60; y++) {
-			for (int x=0; x<60; x++) {
+		for (int y=0; y<worldSize; y++) {
+			for (int x=0; x<worldSize; x++) {
 				if ( getState(world[x][y]) == State.DEAD ) {
 					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 					if (getNumLiveNeighbors(x, y) == 3) {
@@ -219,12 +243,13 @@ public class GameOfLife {
 			}
 		}
 
-		for (int y=0; y<60; y++) {
-			for (int x=0; x<60; x++) {
-				if (new_world[x][y].getBackground() == Color.darkGray)
+		for (int y=0; y<worldSize; y++) {
+			for (int x=0; x<worldSize; x++) {
+				if (new_world[x][y].getBackground() == Color.darkGray) {
 					world[x][y].setBackground(Color.darkGray);
-				else
+				} else {
 					world[x][y].setBackground(darkGreen);
+				}
 			}
 		}
 	}
@@ -238,7 +263,7 @@ public class GameOfLife {
 		int[] c_delta = {-1, 0, 1,-1, 1,-1, 0, 1};
 		int numLiveNeighbors = 0;
 		for (int r=0, c=0; r<8; r++, c++) {
-			if ( x+r_delta[r] != -1 && x+r_delta[r] != 60 && y+c_delta[c] != -1 && y+c_delta[c] != 60) {
+			if ( x+r_delta[r] != -1 && x+r_delta[r] != worldSize && y+c_delta[c] != -1 && y+c_delta[c] != worldSize) {
 				if ( getState( world[x+r_delta[r]][y+c_delta[c]] ) == State.ALIVE ) { numLiveNeighbors++; }
 			}
 		}
