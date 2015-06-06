@@ -27,13 +27,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.Thread;
+import java.util.Set;
 
 public class GameOfLife {
 
 	/**Global variables**/
-	final int worldSize = 50;
+	final int worldSize = 60;
 	final JPanel[][] world = new JPanel[worldSize][worldSize];
 	final Color darkGreen = new Color(0, 200, 0);
+	Thread t;
+	int generationNum = 0;
 
 	public static void main(String[] args) {
 
@@ -56,7 +59,7 @@ public class GameOfLife {
 
 		JFrame mainFrame;
 		final JPanel northBorderPanel, centerPanel, southBorderPanel;
-		final JLabel iterationLabel, simSpeedLabel;
+		final JLabel generationLabel, simSpeedLabel;
 		final JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
 		final JSlider slider;
 
@@ -73,40 +76,40 @@ public class GameOfLife {
 		/**
 		* Create FlowLayout JPanel and add configuration tools to it.
 		* Add the configuration tool JPanel to the south border of the main frame.
-		* Add a JLabel to the north border to keep track of iterations.
+		* Add a JLabel to the north border to keep track of Generations.
 		*/
 		southBorderPanel = new JPanel(new FlowLayout());
 		northBorderPanel = new JPanel(new FlowLayout());
 		simSpeedLabel = new JLabel("Simulation Speed: ");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 17));
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 1000, 1000);
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 1000, 500);
 		slider.setMajorTickSpacing(100);
 		slider.setPaintTicks(true);
-        slider.setInverted(true);
+		slider.setInverted(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
 		stepSimbutton = new JButton("Step");
 		stepSimbutton.setFont(new Font("Serif", Font.BOLD, 17));
 		runSimButton = new JButton("Run");
 		runSimButton.setFont(new Font("Serif", Font.BOLD, 17));
-		clearSimButton = new JButton("Clear");
-		clearSimButton.setFont(new Font("Serif", Font.BOLD, 17));
 		stopSimulation = new JButton("Stop");
 		stopSimulation.setFont(new Font("Serif", Font.BOLD, 17));
-		iterationLabel = new JLabel("Iteration: 0");
-		iterationLabel.setFont(new Font("Serif", Font.BOLD, 17));
+		clearSimButton = new JButton("Clear");
+		clearSimButton.setFont(new Font("Serif", Font.BOLD, 17));
+		generationLabel = new JLabel("Generation: " +generationNum);
+		generationLabel.setFont(new Font("Serif", Font.BOLD, 17));
 		southBorderPanel.add(simSpeedLabel);
 		southBorderPanel.add(slider);
 		southBorderPanel.add(stepSimbutton);
 		southBorderPanel.add(runSimButton);
-		southBorderPanel.add(clearSimButton);
 		southBorderPanel.add(stopSimulation);
-		northBorderPanel.add(iterationLabel);
+		southBorderPanel.add(clearSimButton);
+		northBorderPanel.add(generationLabel);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
 		mainFrame.add(southBorderPanel, BorderLayout.SOUTH);
 
 		/**
 		* Add a grid to center panel of the main frame as a startup default.
-		* Update centerPanel on each iteration after simulation is started.
+		* Update centerPanel on each generation after simulation is started.
 		*/
 		centerPanel = new JPanel(new GridLayout(worldSize, worldSize));
 		for(int x=0; x<worldSize; x++) {
@@ -124,28 +127,27 @@ public class GameOfLife {
 		*/
 		mainFrame.setVisible(true);
 
-
 		/********************************************************************/
 		/*********EVENT LISTENERS AND HANDLERS (ANONYMOUS CLASSES)***********/
 		/********************************************************************/
 		stepSimbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
 				updateWorld();
+				generationNum++;
+				generationLabel.setText("Generation: " +generationNum);
 			}
 		});
 
 		runSimButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent unused) {
-				/**PUT THIS LOOP IN SEPARATE THREAD**/
-				/**
-				* pausing the main thread by simply using Thread.Sleep() here
-				* does not work. The GUI will not update properly because
+				/**Diable button so multiple threads won't be created**/
+				runSimButton.setEnabled(false);
+
+				/**PUT THIS LOOP IN SEPARATE THREAD.
 				* UI events in swing are handled by a single thread, and we
 				* don't want to cause that thread to get stuck in a loop.
-				* Calling updateWorld in a separate thread would fix the
-				* problem.
 				*/
-				new Thread(new Runnable() {
+				t = new Thread(new Runnable() {
 					public void run() {
 						while(true) {
 							updateWorld();
@@ -155,9 +157,12 @@ public class GameOfLife {
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
+							generationNum++;
+							generationLabel.setText("Generation: " +generationNum);
 						}
 					}
-				}).start();
+				});
+				t.start();
 			}
 		});		
 
@@ -168,7 +173,15 @@ public class GameOfLife {
 						world[x][y].setBackground(Color.darkGray);
 					}
 				}
-				iterationLabel.setText("Iteration: 0");
+				generationNum = 0;
+				generationLabel.setText("Generation: 0");
+			}
+		});
+
+		stopSimulation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent unused) {
+				runSimButton.setEnabled(true);
+				t.stop();
 			}
 		});
 
@@ -177,7 +190,6 @@ public class GameOfLife {
 				final int xx = x;
 				final int yy = y;
 				world[xx][yy].addMouseListener(new MouseAdapter(){
-					@Override
 					public void mouseEntered(MouseEvent me) {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
 							world[xx][yy].setBackground(darkGreen);
@@ -200,7 +212,7 @@ public class GameOfLife {
 	/***********************PRIVATE HELPER METHODS***********************/
 	/********************************************************************/
 	/**
-	* Start the simulation here. This is a single-step iteration.
+	* Start the simulation here. This is a single-step Generation.
 	* Iterate through the world and change the colors (states) of
 	* the cells based on the 4 simple rules of Conway's Game of Life.
 	*/
