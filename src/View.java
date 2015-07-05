@@ -4,23 +4,23 @@
 * @author John Abraham
 */
 
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.JComboBox;
-import javax.swing.BorderFactory;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.ImageIcon;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Font;
-import java.awt.Color;
+import javax.swing.UIManager;
+import javax.swing.BorderFactory;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class View {
 
@@ -56,7 +56,7 @@ public class View {
 		* Set frame size, default close operation, and location.
 		*/
 		mainFrame = new JFrame("Conway's Game of Life Simulation");
-		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("logo.png")).getImage());
+		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("/logo.png")).getImage());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setResizable(true);
