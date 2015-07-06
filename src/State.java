@@ -1,6 +1,5 @@
 /**
-* The only two possible states of a cell:
-* DEAD or ALIVE
+* The only two possible states of a cell: DEAD or ALIVE
 *
 * @author John Abraham
 */

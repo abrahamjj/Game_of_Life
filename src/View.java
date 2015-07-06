@@ -1,5 +1,6 @@
 /**
-* View: displays the state of the unverse to the screen.
+* View: displays the state of the unverse to the screen,
+* and provides control tools for the simulator.
 *
 * @author John Abraham
 */
@@ -11,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -25,20 +27,23 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class View {
 
 	/**Global variables**/
+	final int UNIVERSE_SIZE_X = 65;
+	final int UNIVERSE_SIZE_Y = 60;
+	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
+	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
+	final Dimension WINDOW_SIZE = new Dimension(725, 710);
+
 	JSlider slider;
 	JLabel generationLabel;
-	int universeSize = 60;
-	JPanel[][] universe = new JPanel[universeSize][universeSize];
+	JPanel[][] universe = new JPanel[UNIVERSE_SIZE_X][UNIVERSE_SIZE_Y];
 	JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
-	Color aliveCellColor = new Color(0, 200, 0);
-	Color deadCellColor = Color.darkGray;
 
 	public View() {
 		
 		JFrame mainFrame;
 		JLabel simSpeedLabel;
-		JPanel northBorderPanel, centerPanel, southBorderPanel;
-		JComboBox configurationComboBox;
+		JPanel northBorderPanel, centerPanel;
+		JComboBox preconfigurationComboBox, autoFillComboBox;
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -53,76 +58,81 @@ public class View {
 		}
 
 		/**
-		* Set frame size, default close operation, and location.
+		* Set frame size, default close operation, layout, title, and logo.
 		*/
-		mainFrame = new JFrame("Conway's Game of Life Simulation");
+		mainFrame = new JFrame("Conway's Game of Life Simulator");
 		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("/logo.png")).getImage());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setLayout(new BorderLayout());
-		mainFrame.setResizable(true);
-		mainFrame.setSize(855, 725);
+		mainFrame.setSize(WINDOW_SIZE);
+		mainFrame.setResizable(false);
 
-		/**Center JFrame in middle of screen**/
+		/**
+		* Center JFrame in middle of screen.
+		*/
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int xx = (int) ((dimension.getWidth() - mainFrame.getWidth()) / 2);
 		int yy = (int) ((dimension.getHeight() - mainFrame.getHeight()) / 2);
 		mainFrame.setLocation(xx, yy);
 
 		/**
-		* Create FlowLayout JPanel and add configuration tools to it.
-		* Add the configuration tool JPanel to the south border of the main frame.
-		* Add a JLabel to the north border to keep track of generations.
+		* Add configuration and simulation control tools to North border..
 		*/
-		southBorderPanel = new JPanel(new FlowLayout());
 		northBorderPanel = new JPanel(new FlowLayout());
-		simSpeedLabel = new JLabel("Simulation Speed: ");
-		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 1000, 500);
-		slider.setMajorTickSpacing(100);
+		simSpeedLabel = new JLabel("Speed (Hz): ");
+		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 12));
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
+		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
-		slider.setInverted(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
 		stepSimbutton = new JButton("Step");
-		stepSimbutton.setFont(new Font("Serif", Font.BOLD, 16));
+		stepSimbutton.setFont(new Font("Serif", Font.BOLD, 10));
 		runSimButton = new JButton("Run");
-		runSimButton.setFont(new Font("Serif", Font.BOLD, 16));
+		runSimButton.setFont(new Font("Serif", Font.BOLD, 10));
 		stopSimulation = new JButton("Stop");
-		stopSimulation.setFont(new Font("Serif", Font.BOLD, 16));
+		stopSimulation.setFont(new Font("Serif", Font.BOLD, 10));
 		clearSimButton = new JButton("Clear");
-		clearSimButton.setFont(new Font("Serif", Font.BOLD, 16));
+		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
+		String[] configurationOptions = { "Pre-Configurations", "Gosper Glider Gun", 
+							              "Horizontal Line", "Vertical Line", "X",
+							              "Gliders", "Pulsar" };
+		preconfigurationComboBox = new JComboBox(configurationOptions);
+		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
+		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",
+							        "50%", "60%", "70%", "80%", "90%" };
+		autoFillComboBox = new JComboBox(autoFillOptions);
+		autoFillComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		generationLabel = new JLabel("Generation: 0");
-		generationLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		String[] configurationOptions = {"Select Configuration", "Gosper Glider Gun", 
-							"Horizontal Line", "Vertical Line", "X",
-							"Gliders", "Pulsar"
-						   };
-		configurationComboBox = new JComboBox(configurationOptions);
-		configurationComboBox.setFont(new Font("Serif", Font.BOLD, 15));
-		southBorderPanel.add(simSpeedLabel);
-		southBorderPanel.add(slider);
-		southBorderPanel.add(stepSimbutton);
-		southBorderPanel.add(runSimButton);
-		southBorderPanel.add(stopSimulation);
-		southBorderPanel.add(clearSimButton);
-		southBorderPanel.add(configurationComboBox);
+		generationLabel.setFont(new Font("Serif", Font.BOLD, 12));
+		northBorderPanel.add(simSpeedLabel);
+		northBorderPanel.add(slider);
+		northBorderPanel.add(stepSimbutton);
+		northBorderPanel.add(runSimButton);
+		northBorderPanel.add(stopSimulation);
+		northBorderPanel.add(clearSimButton);
+		northBorderPanel.add(preconfigurationComboBox);
+		northBorderPanel.add(autoFillComboBox);
 		northBorderPanel.add(generationLabel);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
-		mainFrame.add(southBorderPanel, BorderLayout.SOUTH);
-
-		/**
+ 
+ 		/**
 		* Add a grid to center panel of the main frame as a startup default.
-		* Update centerPanel on each iteration after simulation is started.
+		* Update the center panel on each iteration after simulation is started.
 		*/
-		centerPanel = new JPanel(new GridLayout(universeSize, universeSize));
-		for(int y=0; y<universeSize; y++) {
-			for(int x=0; x<universeSize; x++) {
+		centerPanel = new JPanel(new GridLayout(UNIVERSE_SIZE_X, UNIVERSE_SIZE_Y));
+		for(int x=0; x<UNIVERSE_SIZE_X; x++) {
+			for(int y=0; y<UNIVERSE_SIZE_Y; y++) {
 				universe[x][y] = new JPanel();
-				universe[x][y].setBackground(deadCellColor);
+				universe[x][y].setBackground(DEAD_CELL_COLOR);
 				universe[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				centerPanel.add( universe[x][y] );
 			}
 		}
 		mainFrame.add(centerPanel, BorderLayout.CENTER);
+
+		/**
+		* Display all components in the JFrame that was created.
+		*/
 		mainFrame.setVisible(true);
 	}
 
@@ -146,8 +156,8 @@ public class View {
 		return stopSimulation;
 	}
 
-	public JSlider getSlider() {
-		return slider;
+	public int getSliderValue() {
+		return slider.getValue();
 	}
 
 	public JPanel getPanel(int x, int y) {
@@ -158,7 +168,7 @@ public class View {
 	/******FOR CELL COLOR/STATE MANIPULATION*******/
 	/**********************************************/
 	public State getPanelState(int x, int y) {
-		if(universe[x][y].getBackground() == deadCellColor)
+		if(universe[x][y].getBackground() == DEAD_CELL_COLOR)
 			return State.DEAD;
 		else
 			return State.ALIVE;
@@ -166,16 +176,20 @@ public class View {
  
 	public void setPanelState(int x, int y, State state) {
 		if(state == State.DEAD)
-			universe[x][y].setBackground(deadCellColor);
+			universe[x][y].setBackground(DEAD_CELL_COLOR);
 		else
-			universe[x][y].setBackground(aliveCellColor);
+			universe[x][y].setBackground(ALIVE_CELL_COLOR);
 	}
 
 	public void setGenerationText(int generationNum) {
 		generationLabel.setText("Generation: " +generationNum);
 	}
 
-	public int getUniverseSize() {
-		return universeSize;
+	public int getUniverseSizeRows() {
+		return UNIVERSE_SIZE_X;
+	}
+
+	public int getUniverseSizeColumns() {
+		return UNIVERSE_SIZE_Y;
 	}
 }

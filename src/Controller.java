@@ -1,7 +1,7 @@
 /**
 * Controller: alters the state of the view.
-* All event handling happens here.
-*
+* All calculations and event handling happens here.
+* 
 * @author John Abraham
 */
 
@@ -14,14 +14,16 @@ import java.awt.event.ActionListener;
 
 public class Controller {
 
-	private Thread thread;
 	private View view;
-	private int universeSize;
+	private Thread thread;
 	private int generationNum;
+	private int universeSizeRows;
+	private int universeSizeColumns;
 
 	public Controller(View view) {
 		this.view = view;
-		universeSize = view.getUniverseSize();
+		universeSizeRows = view.getUniverseSizeRows();
+		universeSizeColumns = view.getUniverseSizeColumns();
 		generationNum = 0;
 	}
 
@@ -43,7 +45,8 @@ public class Controller {
 				view.getClearButton().setEnabled(false);
 				view.getStepButton().setEnabled(false);
 
-				/**PUT THIS LOOP IN SEPARATE THREAD.
+				/**
+				* PUT THIS LOOP IN SEPARATE THREAD.
 				* UI events in swing are handled by a single thread, and we
 				* don't want to cause that thread to get stuck in a loop.
 				*/
@@ -52,9 +55,16 @@ public class Controller {
 						while(true) {
 							updateWorld();
 							view.setGenerationText( ++generationNum );
-							/**pause this seperate thread for a simulation delay**/
+							/**pause this seperate thread for the simulation delay**/
+							/*******************************************************
+							* From the JSlider we're getting 1...10
+							* Thread.sleep() takes in 1000 for 1 Hz because 1000ms = 1s
+							* To convert 1...10 to 1...10 Hz we use f(x) = 1000*(1/x)
+							* (x representing the jSlider values)
+							**/
+							int x = view.getSliderValue();
 							try {
-								Thread.sleep(view.getSlider().getValue());
+								Thread.sleep( (long)(1000/x) );
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -67,8 +77,8 @@ public class Controller {
 
 		view.getClearButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				for (int y=0; y<universeSize; y++) {
-					for (int x=0; x<universeSize; x++) {
+				for (int x=0; x<universeSizeRows; x++) {
+					for (int y=0; y<universeSizeColumns; y++) {
 						view.setPanelState(x, y, State.DEAD);
 					}
 				}
@@ -87,15 +97,19 @@ public class Controller {
 		});
 
 		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
-		for (int y=0; y<universeSize; y++) {
-			for (int x=0; x<universeSize; x++) {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
 				final int xx = x;
 				final int yy = y;
 				view.getPanel(xx, yy).addMouseListener(new MouseAdapter(){
 					public void mouseEntered(MouseEvent me) {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
-							view.setPanelState(xx, yy, State.ALIVE);
- 						}
+							if(view.getPanelState(xx, yy) == State.DEAD) {
+								view.setPanelState(xx, yy, State.ALIVE);
+							} else {
+								view.setPanelState(xx, yy, State.DEAD);
+							}
+						}
 					}
 
 					public void mousePressed(MouseEvent me) {
@@ -116,20 +130,20 @@ public class Controller {
 	/**
 	* Start the simulation here. This is a single-step iteration.
 	* Iterate through the universe and change the states of the
-	* cells in the JPanel grid based on the 4 simple rules of Conway's
+	* cells in the JPanel matrix based on the 4 simple rules of Conway's
 	* Game of Life.
 	*/
 	private void updateWorld() {
-		State[][] new_universe = new State[universeSize][universeSize];
+		State[][] new_universe = new State[universeSizeRows][universeSizeColumns];
 
-		for (int y=0; y<universeSize; y++) {
-			for (int x=0; x<universeSize; x++) {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
 				new_universe[x][y] = State.DEAD;
 			}
 		}
 
-		for (int y=0; y<universeSize; y++) {
-			for (int x=0; x<universeSize; x++) {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
 				if ( view.getPanelState(x, y) == State.DEAD ) {
 					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 					if (getNumLiveNeighbors(x, y) == 3) {
@@ -156,8 +170,8 @@ public class Controller {
 			}
 		}
 
-		for (int y=0; y<universeSize; y++) {
-			for (int x=0; x<universeSize; x++) {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
 				if (new_universe[x][y] == State.DEAD) {
 					view.setPanelState(x, y, State.DEAD);
 				} else {
@@ -175,7 +189,7 @@ public class Controller {
 		int[] c_delta = {-1, 0, 1,-1, 1,-1, 0, 1};
 		int numLiveNeighbors = 0;
 		for (int r=0, c=0; r<8; r++, c++) {
-			if ( x+r_delta[r] != -1 && x+r_delta[r] != universeSize && y+c_delta[c] != -1 && y+c_delta[c] != universeSize) {
+			if ( x+r_delta[r] != -1 && x+r_delta[r] != universeSizeRows && y+c_delta[c] != -1 && y+c_delta[c] != universeSizeColumns) {
 				if ( view.getPanelState(x+r_delta[r], y+c_delta[c]) == State.ALIVE ) {
 					numLiveNeighbors++;
 				}
