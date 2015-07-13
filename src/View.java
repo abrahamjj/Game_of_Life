@@ -43,7 +43,7 @@ public class View {
 		JFrame mainFrame;
 		JLabel simSpeedLabel;
 		JPanel northBorderPanel, centerPanel;
-		JComboBox preconfigurationComboBox, autoFillComboBox;
+		JComboBox<String> preconfigurationComboBox, autoFillComboBox;
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -81,7 +81,7 @@ public class View {
 		northBorderPanel = new JPanel(new FlowLayout());
 		simSpeedLabel = new JLabel("Speed (Hz): ");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 12));
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 20, 1);
 		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
@@ -96,11 +96,11 @@ public class View {
 		String[] configurationOptions = { "Pre-Configurations", "Gosper Glider Gun", 
 							              "Horizontal Line", "Vertical Line", "X",
 							              "Gliders", "Pulsar" };
-		preconfigurationComboBox = new JComboBox(configurationOptions);
+		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",
 							        "50%", "60%", "70%", "80%", "90%" };
-		autoFillComboBox = new JComboBox(autoFillOptions);
+		autoFillComboBox = new JComboBox<String>(autoFillOptions);
 		autoFillComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		generationLabel = new JLabel("Generation: 0");
 		generationLabel.setFont(new Font("Serif", Font.BOLD, 12));

@@ -19,6 +19,7 @@ public class Controller {
 	private int generationNum;
 	private int universeSizeRows;
 	private int universeSizeColumns;
+	private boolean isThreadRunning;
 
 	public Controller(View view) {
 		this.view = view;
@@ -33,7 +34,7 @@ public class Controller {
 	public void control() {
 		view.getStepButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {                  
-				updateWorld();
+				updateUniverse();
 				view.setGenerationText( ++generationNum );
 			}
 		});
@@ -44,6 +45,7 @@ public class Controller {
 				view.getRunButton().setEnabled(false);
 				view.getClearButton().setEnabled(false);
 				view.getStepButton().setEnabled(false);
+				isThreadRunning = true;
 
 				/**
 				* PUT THIS LOOP IN SEPARATE THREAD.
@@ -52,15 +54,15 @@ public class Controller {
 				*/
 				thread = new Thread(new Runnable() {
 					public void run() {
-						while(true) {
-							updateWorld();
+						while(isThreadRunning) {
+							updateUniverse();
 							view.setGenerationText( ++generationNum );
 							/**pause this seperate thread for the simulation delay**/
 							/*******************************************************
-							* From the JSlider we're getting 1...10
-							* Thread.sleep() takes in 1000 for 1 Hz because 1000ms = 1s
-							* To convert 1...10 to 1...10 Hz we use f(x) = 1000*(1/x)
-							* (x representing the jSlider values)
+							* From the JSlider we're getting 1...20 Integers
+							* Thread.sleep() takes in long 1000 for 1 Hz updates because 1000ms = 1s
+							* To convert 1...20 Integers to 1...20 Hz we use f(x) = 1000*(1/x)
+							* (x representing the jSlider integer values)
 							**/
 							int x = view.getSliderValue();
 							try {
@@ -89,10 +91,10 @@ public class Controller {
 
 		view.getStopButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
+				isThreadRunning = false;
 				view.getRunButton().setEnabled(true);
 				view.getClearButton().setEnabled(true);
 				view.getStepButton().setEnabled(true);
-				thread.stop();
 			}
 		});
 
@@ -133,7 +135,7 @@ public class Controller {
 	* cells in the JPanel matrix based on the 4 simple rules of Conway's
 	* Game of Life.
 	*/
-	private void updateWorld() {
+	private void updateUniverse() {
 		State[][] new_universe = new State[universeSizeRows][universeSizeColumns];
 
 		for (int x=0; x<universeSizeRows; x++) {
