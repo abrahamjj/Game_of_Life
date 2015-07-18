@@ -5,6 +5,7 @@
 * @author John Abraham
 */
 
+import java.lang.Math;
 import java.lang.Thread;
 import javax.swing.JSlider;
 import java.awt.event.MouseEvent;
@@ -98,6 +99,25 @@ public class Controller {
 			}
 		});
 
+		view.getAutoFillComboBox().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				/**Only autofill if one of the percentage options is selected and not the AutoFill label**/
+				if (view.getAutoFillComboBox().getSelectedIndex() > 0) {
+					/**First reset all cells to the Dead state**/
+					for (int x=0; x<universeSizeRows; x++) {
+						for (int y=0; y<universeSizeColumns; y++) {
+							view.setPanelState(x, y, State.DEAD);
+						}
+					}
+					/**Second autofill the universe with Dead/Alive states based on the selected percentage**/
+					String selectedPercentageString = view.getAutoFillComboBox().getSelectedItem().toString();
+					int selectedPercentageInteger = Integer.parseInt( selectedPercentageString.substring(0, selectedPercentageString.length()-1) );
+					randomlyFillUniverse( selectedPercentageInteger );
+				}
+			}
+
+		});
+
 		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
 		for (int x=0; x<universeSizeRows; x++) {
 			for (int y=0; y<universeSizeColumns; y++) {
@@ -108,8 +128,6 @@ public class Controller {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
 							if(view.getPanelState(xx, yy) == State.DEAD) {
 								view.setPanelState(xx, yy, State.ALIVE);
-							} else {
-								view.setPanelState(xx, yy, State.DEAD);
 							}
 						}
 					}
@@ -184,7 +202,7 @@ public class Controller {
 	}
 
 	/**
-	* helper method to get the number of live neighbors for a given cell.
+	* Helper method to get the number of live neighbors for a given cell.
 	*/
 	private int getNumLiveNeighbors(int x, int y) {
 		int[] r_delta = {-1,-1,-1, 0, 0, 1, 1, 1};
@@ -198,5 +216,18 @@ public class Controller {
 			}
 		}
 		return numLiveNeighbors;
+	}
+
+	/**
+	* Helper method that randomly fills the univese based on a selected percentage vlue
+	*/
+	private void randomlyFillUniverse(int percentage) {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
+				if (Math.random()*100 < percentage) {
+					view.setPanelState(x, y, State.ALIVE);
+				}
+			}
+		}
 	}
 }

@@ -26,24 +26,25 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class View {
 
-	/**Global variables**/
+	/**Global Constants**/
 	final int UNIVERSE_SIZE_X = 65;
 	final int UNIVERSE_SIZE_Y = 60;
 	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
 	final Dimension WINDOW_SIZE = new Dimension(725, 710);
 
+	/**Global variables**/
 	JSlider slider;
 	JLabel generationLabel;
 	JPanel[][] universe = new JPanel[UNIVERSE_SIZE_X][UNIVERSE_SIZE_Y];
 	JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
+	JComboBox<String> preconfigurationComboBox, autoFillComboBox;
 
 	public View() {
 		
 		JFrame mainFrame;
 		JLabel simSpeedLabel;
 		JPanel northBorderPanel, centerPanel;
-		JComboBox<String> preconfigurationComboBox, autoFillComboBox;
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -136,10 +137,14 @@ public class View {
 		mainFrame.setVisible(true);
 	}
 
-	/**********************************************/
-	/**CONTROLLER NEEDS ACCESS TO JBUTTONS TO ADD**/
-	/**ACTIONLISTENERS AND EVENT HANDLERS TO THEM**/
-	/**********************************************/
+	/*************************************************/
+	/**CONTROLLER NEEDS ACCESS TO JCOMPONENTS TO ADD**/
+	/**ACTIONLISTENERS AND EVENT HANDLERS TO THEM*****/
+	/*************************************************/
+	public int getSliderValue() {
+		return slider.getValue();
+	}
+
 	public JButton getStepButton() {
 		return stepSimbutton;
 	}
@@ -156,8 +161,8 @@ public class View {
 		return stopSimulation;
 	}
 
-	public int getSliderValue() {
-		return slider.getValue();
+	public JComboBox getAutoFillComboBox() {
+		return autoFillComboBox;
 	}
 
 	public JPanel getPanel(int x, int y) {

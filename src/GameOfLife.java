@@ -4,8 +4,6 @@
 * @author John Abraham
 */
 
-import javax.swing.SwingUtilities;
-
 public class GameOfLife {
 
 	public static void main(String[] args) {
