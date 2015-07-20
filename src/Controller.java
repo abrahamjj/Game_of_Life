@@ -80,13 +80,11 @@ public class Controller {
 
 		view.getClearButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				for (int x=0; x<universeSizeRows; x++) {
-					for (int y=0; y<universeSizeColumns; y++) {
-						view.setPanelState(x, y, State.DEAD);
-					}
-				}
+				clearUniverse();
 				generationNum = 0;
 				view.setGenerationText( 0 );
+				view.getAutoFillComboBox().setSelectedIndex(0);
+				view.getPreconfigurationComboBox().setSelectedIndex(0);
 			}
 		});
 
@@ -96,6 +94,8 @@ public class Controller {
 				view.getRunButton().setEnabled(true);
 				view.getClearButton().setEnabled(true);
 				view.getStepButton().setEnabled(true);
+				view.getAutoFillComboBox().setSelectedIndex(0);
+				view.getPreconfigurationComboBox().setSelectedIndex(0);
 			}
 		});
 
@@ -104,18 +104,40 @@ public class Controller {
 				/**Only autofill if one of the percentage options is selected and not the AutoFill label**/
 				if (view.getAutoFillComboBox().getSelectedIndex() > 0) {
 					/**First reset all cells to the Dead state**/
-					for (int x=0; x<universeSizeRows; x++) {
-						for (int y=0; y<universeSizeColumns; y++) {
-							view.setPanelState(x, y, State.DEAD);
-						}
-					}
+					clearUniverse();
 					/**Second autofill the universe with Dead/Alive states based on the selected percentage**/
 					String selectedPercentageString = view.getAutoFillComboBox().getSelectedItem().toString();
-					int selectedPercentageInteger = Integer.parseInt( selectedPercentageString.substring(0, selectedPercentageString.length()-1) );
+					int selectedPercentageInteger = 
+					Integer.parseInt( selectedPercentageString.substring(0, selectedPercentageString.length()-1) );
 					randomlyFillUniverse( selectedPercentageInteger );
 				}
 			}
 
+		});
+
+		view.getPreconfigurationComboBox().addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent actionEvent) {
+					/**Only set preconfiguration if one of the preconfiguration options is selected**/
+					if (view.getPreconfigurationComboBox().getSelectedIndex() > 0) {
+						String selectedPreconfiguration =
+						view.getPreconfigurationComboBox().getSelectedItem().toString();
+						if(selectedPreconfiguration.equals("Horizontal Line")) {
+							for(int y=0; y<universeSizeColumns; y++) {
+								view.setPanelState(universeSizeRows/2, y, State.ALIVE);
+							}
+						} else if(selectedPreconfiguration.equals("Vertical Line")) {
+							for(int x=0; x<universeSizeRows; x++) {
+								view.setPanelState(x, universeSizeColumns/2, State.ALIVE);
+							}
+						} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
+
+						} else if(selectedPreconfiguration.equals("Gliders")) {
+
+						} else if(selectedPreconfiguration.equals("Pulsar")) {
+
+						}
+					}
+				}
 		});
 
 		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
@@ -222,11 +244,28 @@ public class Controller {
 	* Helper method that randomly fills the univese based on a selected percentage vlue
 	*/
 	private void randomlyFillUniverse(int percentage) {
+		/**
+		* After clearing the entire universe each cell is matched with a Math.random() value.
+		* Math.random() gives a double value between 0 and 1. We multiply that value by 100.
+		* If this new value is less than the percentage value we make the cell corresponding
+		* to it alive. This gives a reasonably close Dead:Alive cell ratio.
+		*/
 		for (int x=0; x<universeSizeRows; x++) {
 			for (int y=0; y<universeSizeColumns; y++) {
 				if (Math.random()*100 < percentage) {
 					view.setPanelState(x, y, State.ALIVE);
 				}
+			}
+		}
+	}
+
+	/**
+	* Helper method that resets the state of all sells to Dead
+	*/
+	private void clearUniverse() {
+		for (int x=0; x<universeSizeRows; x++) {
+			for (int y=0; y<universeSizeColumns; y++) {
+				view.setPanelState(x, y, State.DEAD);
 			}
 		}
 	}

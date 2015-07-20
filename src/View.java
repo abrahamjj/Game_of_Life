@@ -27,11 +27,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class View {
 
 	/**Global Constants**/
-	final int UNIVERSE_SIZE_X = 65;
-	final int UNIVERSE_SIZE_Y = 60;
+	final int UNIVERSE_SIZE_X = 55;
+	final int UNIVERSE_SIZE_Y = 61;
 	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
-	final Dimension WINDOW_SIZE = new Dimension(725, 710);
 
 	/**Global variables**/
 	JSlider slider;
@@ -65,23 +64,15 @@ public class View {
 		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("/logo.png")).getImage());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setLayout(new BorderLayout());
-		mainFrame.setSize(WINDOW_SIZE);
 		mainFrame.setResizable(false);
-
-		/**
-		* Center JFrame in middle of screen.
-		*/
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int xx = (int) ((dimension.getWidth() - mainFrame.getWidth()) / 2);
-		int yy = (int) ((dimension.getHeight() - mainFrame.getHeight()) / 2);
-		mainFrame.setLocation(xx, yy);
 
 		/**
 		* Add configuration and simulation control tools to North border..
 		*/
 		northBorderPanel = new JPanel(new FlowLayout());
-		simSpeedLabel = new JLabel("Speed (Hz): ");
+		simSpeedLabel = new JLabel("<html><font color='rgb(0,200,0)'>Speed (Hz):</font></html>");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 12));
+		simSpeedLabel.setBackground(Color.GREEN);
 		slider = new JSlider(JSlider.HORIZONTAL, 1, 20, 1);
 		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
@@ -94,8 +85,8 @@ public class View {
 		stopSimulation.setFont(new Font("Serif", Font.BOLD, 10));
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
-		String[] configurationOptions = { "Pre-Configurations", "Gosper Glider Gun", 
-							              "Horizontal Line", "Vertical Line", "X",
+		String[] configurationOptions = { "Pre-Configurations","Horizontal Line",
+										  "Vertical Line","Gosper Glider Gun",
 							              "Gliders", "Pulsar" };
 		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
@@ -103,7 +94,7 @@ public class View {
 							        "50%", "60%", "70%", "80%", "90%" };
 		autoFillComboBox = new JComboBox<String>(autoFillOptions);
 		autoFillComboBox.setFont(new Font("Serif", Font.BOLD, 10));
-		generationLabel = new JLabel("Generation: 0");
+		generationLabel = new JLabel("<html><font color='rgb(0,200,0)'>Generation: 0</font></html>");
 		generationLabel.setFont(new Font("Serif", Font.BOLD, 12));
 		northBorderPanel.add(simSpeedLabel);
 		northBorderPanel.add(slider);
@@ -114,6 +105,7 @@ public class View {
 		northBorderPanel.add(preconfigurationComboBox);
 		northBorderPanel.add(autoFillComboBox);
 		northBorderPanel.add(generationLabel);
+		northBorderPanel.setBackground(DEAD_CELL_COLOR);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
  
  		/**
@@ -132,9 +124,19 @@ public class View {
 		mainFrame.add(centerPanel, BorderLayout.CENTER);
 
 		/**
-		* Display all components in the JFrame that was created.
+		* Display all components in the JFrame.
 		*/
+		mainFrame.pack();
 		mainFrame.setVisible(true);
+
+		/**
+		* Center JFrame in middle of screen.
+		*/
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int xx = (int) ((dimension.getWidth() - mainFrame.getWidth()) / 2);
+		int yy = (int) ((dimension.getHeight() - mainFrame.getHeight()) / 2);
+		mainFrame.setLocation(xx, yy);
+
 	}
 
 	/*************************************************/
@@ -165,6 +167,10 @@ public class View {
 		return autoFillComboBox;
 	}
 
+	public JComboBox getPreconfigurationComboBox() {
+		return preconfigurationComboBox;
+	}
+
 	public JPanel getPanel(int x, int y) {
 		return universe[x][y];
 	}
@@ -187,7 +193,7 @@ public class View {
 	}
 
 	public void setGenerationText(int generationNum) {
-		generationLabel.setText("Generation: " +generationNum);
+		generationLabel.setText("<html><font color='rgb(0,200,0)'>Generation: "+generationNum+"</font></html>");
 	}
 
 	public int getUniverseSizeRows() {
