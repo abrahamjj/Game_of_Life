@@ -142,7 +142,7 @@ public class Controller {
 							readConfigurationFile("config/GosperGliderGun.csv");
 						} else if(selectedPreconfiguration.equals("Pulsar")) {
 							/**Read coordinates from CSV file**/
-
+							readConfigurationFile("config/Pulsar.csv");
 						}
 					}
 				}
