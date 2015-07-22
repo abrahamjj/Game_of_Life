@@ -61,7 +61,7 @@ public class View {
 		* Set frame size, default close operation, layout, title, and logo.
 		*/
 		mainFrame = new JFrame("Conway's Game of Life Simulator");
-		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("/logo.png")).getImage());
+		mainFrame.setIconImage(new ImageIcon(GameOfLife.class.getResource("img/logo.png")).getImage());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setResizable(false);
@@ -73,7 +73,7 @@ public class View {
 		simSpeedLabel = new JLabel("<html><font color='rgb(0,200,0)'>Speed (Hz):</font></html>");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 12));
 		simSpeedLabel.setBackground(Color.GREEN);
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 20, 1);
+		slider = new JSlider(JSlider.HORIZONTAL, 1, 30, 1);
 		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setLabelTable(slider.createStandardLabels(10));
@@ -86,8 +86,8 @@ public class View {
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
 		String[] configurationOptions = { "Pre-Configurations","Horizontal Line",
-										  "Vertical Line","Gosper Glider Gun",
-							              "Gliders", "Pulsar" };
+										  "Vertical Line","Glider","Gosper Glider Gun",
+										  "Pulsar" };
 		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",

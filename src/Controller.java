@@ -8,6 +8,10 @@
 import java.lang.Math;
 import java.lang.Thread;
 import javax.swing.JSlider;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -18,14 +22,14 @@ public class Controller {
 	private View view;
 	private Thread thread;
 	private int generationNum;
-	private int universeSizeRows;
-	private int universeSizeColumns;
+	private int univerRowSize;
+	private int univerColumnSize;
 	private boolean isThreadRunning;
 
 	public Controller(View view) {
 		this.view = view;
-		universeSizeRows = view.getUniverseSizeRows();
-		universeSizeColumns = view.getUniverseSizeColumns();
+		univerRowSize = view.getUniverseSizeRows();
+		univerColumnSize = view.getUniverseSizeColumns();
 		generationNum = 0;
 	}
 
@@ -122,18 +126,21 @@ public class Controller {
 						String selectedPreconfiguration =
 						view.getPreconfigurationComboBox().getSelectedItem().toString();
 						if(selectedPreconfiguration.equals("Horizontal Line")) {
-							for(int y=0; y<universeSizeColumns; y++) {
-								view.setPanelState(universeSizeRows/2, y, State.ALIVE);
+							for(int y=0; y<univerColumnSize; y++) {
+								view.setPanelState(univerRowSize/2, y, State.ALIVE);
 							}
 						} else if(selectedPreconfiguration.equals("Vertical Line")) {
-							for(int x=0; x<universeSizeRows; x++) {
-								view.setPanelState(x, universeSizeColumns/2, State.ALIVE);
+							for(int x=0; x<univerRowSize; x++) {
+								view.setPanelState(x, univerColumnSize/2, State.ALIVE);
 							}
+						} else if(selectedPreconfiguration.equals("Glider")) {
+							/**Read coordinates from CSV file**/
+							readConfigurationFile("config/Glider.csv");
 						} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
-
-						} else if(selectedPreconfiguration.equals("Gliders")) {
-
+							/**Read coordinates from CSV file**/
+							readConfigurationFile("config/GosperGliderGun.csv");
 						} else if(selectedPreconfiguration.equals("Pulsar")) {
+							/**Read coordinates from CSV file**/
 
 						}
 					}
@@ -141,8 +148,8 @@ public class Controller {
 		});
 
 		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				final int xx = x;
 				final int yy = y;
 				view.getPanel(xx, yy).addMouseListener(new MouseAdapter(){
@@ -176,16 +183,16 @@ public class Controller {
 	* Game of Life.
 	*/
 	private void updateUniverse() {
-		State[][] new_universe = new State[universeSizeRows][universeSizeColumns];
+		State[][] new_universe = new State[univerRowSize][univerColumnSize];
 
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				new_universe[x][y] = State.DEAD;
 			}
 		}
 
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				if ( view.getPanelState(x, y) == State.DEAD ) {
 					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 					if (getNumLiveNeighbors(x, y) == 3) {
@@ -212,8 +219,8 @@ public class Controller {
 			}
 		}
 
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				if (new_universe[x][y] == State.DEAD) {
 					view.setPanelState(x, y, State.DEAD);
 				} else {
@@ -231,7 +238,7 @@ public class Controller {
 		int[] c_delta = {-1, 0, 1,-1, 1,-1, 0, 1};
 		int numLiveNeighbors = 0;
 		for (int r=0, c=0; r<8; r++, c++) {
-			if ( x+r_delta[r] != -1 && x+r_delta[r] != universeSizeRows && y+c_delta[c] != -1 && y+c_delta[c] != universeSizeColumns) {
+			if ( x+r_delta[r] != -1 && x+r_delta[r] != univerRowSize && y+c_delta[c] != -1 && y+c_delta[c] != univerColumnSize) {
 				if ( view.getPanelState(x+r_delta[r], y+c_delta[c]) == State.ALIVE ) {
 					numLiveNeighbors++;
 				}
@@ -250,8 +257,8 @@ public class Controller {
 		* If this new value is less than the percentage value we make the cell corresponding
 		* to it alive. This gives a reasonably close Dead:Alive cell ratio.
 		*/
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				if (Math.random()*100 < percentage) {
 					view.setPanelState(x, y, State.ALIVE);
 				}
@@ -263,10 +270,42 @@ public class Controller {
 	* Helper method that resets the state of all sells to Dead
 	*/
 	private void clearUniverse() {
-		for (int x=0; x<universeSizeRows; x++) {
-			for (int y=0; y<universeSizeColumns; y++) {
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
 				view.setPanelState(x, y, State.DEAD);
 			}
 		}
+	}
+
+	/**
+	* Helper method that reads in a csv file that contains coordiantes
+	* and sets the states of the corrisponding cells to alive.
+	*/
+	private void readConfigurationFile(String fileName) {
+		BufferedReader br = null;
+		String line = "";
+		try {
+			/**
+			* Reading files using the ClassLoader class allows us to access those configuration
+			*  files in the jar file without extracting it.
+			*/
+			br = new BufferedReader(new FileReader(fileName));
+			while ((line = br.readLine()) != null) {
+				String[] coordinates = line.split(",");
+				view.setPanelState(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]), State.ALIVE);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}e
 	}
 }
