@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.ActionListener;
+import java.lang.*;
+import java.io.*;
 
 public class Controller {
 
@@ -286,15 +288,20 @@ public class Controller {
 		String line = "";
 		try {
 			/**
-			* Reading files using the ClassLoader class allows us to access those configuration
-			*  files in the jar file without extracting it.
+			* Reading files using getResourceAsStream() allows us to access those configuration
+			* files in the jar file without extracting it.
 			*/
-			br = new BufferedReader(new FileReader(fileName));
+			Class cls = Class.forName("Controller");
+			ClassLoader cLoader = cls.getClassLoader();
+			InputStream is = cLoader.getResourceAsStream(fileName);
+			br = new BufferedReader(new InputStreamReader(is));
 			while ((line = br.readLine()) != null) {
 				String[] coordinates = line.split(",");
 				view.setPanelState(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]), State.ALIVE);
 			}
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -306,6 +313,6 @@ public class Controller {
 					e.printStackTrace();
 				}
 			}
-		}e
+		}
 	}
 }
