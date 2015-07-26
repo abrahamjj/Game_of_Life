@@ -136,13 +136,16 @@ public class Controller {
 							}
 						} else if(selectedPreconfiguration.equals("Glider")) {
 							/**Read coordinates from CSV file**/
-							readConfigurationFile("config/Glider.csv");
+							loadConfigurationFile("config/Glider.csv");
 						} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
 							/**Read coordinates from CSV file**/
-							readConfigurationFile("config/GosperGliderGun.csv");
+							loadConfigurationFile("config/GosperGliderGun.csv");
 						} else if(selectedPreconfiguration.equals("Pulsar")) {
 							/**Read coordinates from CSV file**/
-							readConfigurationFile("config/Pulsar.csv");
+							loadConfigurationFile("config/Pulsar.csv");
+						} else if(selectedPreconfiguration.equals("Pentadecathlon")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/Pentadecathlon.csv");
 						}
 					}
 				}
@@ -282,7 +285,7 @@ public class Controller {
 	* Helper method that reads in a csv file that contains coordiantes
 	* and sets the states of the corrisponding cells to alive.
 	*/
-	private void readConfigurationFile(String fileName) {
+	private void loadConfigurationFile(String fileName) {
 		BufferedReader br = null;
 		String line = "";
 		try {
