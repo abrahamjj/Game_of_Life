@@ -87,7 +87,7 @@ public class View {
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
 		String[] configurationOptions = { "Pre-Configurations","Horizontal Line",
 										  "Vertical Line","Glider","Gosper Glider Gun",
-										  "Pulsar", "Pentadecathlon" };
+										  "Lightweight Spaceship","Pulsar", "Pentadecathlon" };
 		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",

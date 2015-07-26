@@ -140,6 +140,9 @@ public class Controller {
 						} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
 							/**Read coordinates from CSV file**/
 							loadConfigurationFile("config/GosperGliderGun.csv");
+						} else if(selectedPreconfiguration.equals("Lightweight Spaceship")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/LightweightSpaceship.csv");
 						} else if(selectedPreconfiguration.equals("Pulsar")) {
 							/**Read coordinates from CSV file**/
 							loadConfigurationFile("config/Pulsar.csv");
@@ -161,6 +164,7 @@ public class Controller {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
 							if(view.getPanelState(xx, yy) == State.DEAD) {
 								view.setPanelState(xx, yy, State.ALIVE);
+								System.out.println(xx +","+yy);
 							}
 						}
 					}
@@ -168,6 +172,7 @@ public class Controller {
 					public void mousePressed(MouseEvent me) {
 						if(view.getPanelState(xx, yy) == State.DEAD) {
 							view.setPanelState(xx, yy, State.ALIVE);
+							System.out.println(xx +","+yy);
 						} else {
 							view.setPanelState(xx, yy, State.DEAD);
 						}
