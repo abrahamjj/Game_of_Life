@@ -29,7 +29,7 @@ public class View {
 	/**Global Constants**/
 	final int UNIVERSE_SIZE_X = 55;
 	final int UNIVERSE_SIZE_Y = 61;
-	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
+	final Color ALIVE_CELL_COLOR = new Color(0, 0, 0);
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
 
 	/**Global variables**/
@@ -85,11 +85,13 @@ public class View {
 		stopSimulation.setFont(new Font("Serif", Font.BOLD, 10));
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
-		String[] configurationOptions = { "Pre-Configurations","Horizontal Line",
-										  "Vertical Line","Glider","Gosper Glider Gun",
-										  "Lightweight Spaceship","Pulsar", "Pentadecathlon" };
+		String[] configurationOptions = { "Pre-Configurations","Horizontal Line","Vertical Line",
+										  "Glider","Gosper Glider Gun","Lightweight Spaceship","Weekender",
+										  "25P3H1V0.2","44P5H2V0","30P5H2V0","Queen Bee Shuttle","Tumbler","Pulsar",
+										  "Pentadecathlon" };
 		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
+		preconfigurationComboBox.setMaximumRowCount(preconfigurationComboBox.getModel().getSize());
 		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",
 							        "50%", "60%", "70%", "80%", "90%" };
 		autoFillComboBox = new JComboBox<String>(autoFillOptions);

@@ -143,6 +143,24 @@ public class Controller {
 						} else if(selectedPreconfiguration.equals("Lightweight Spaceship")) {
 							/**Read coordinates from CSV file**/
 							loadConfigurationFile("config/LightweightSpaceship.csv");
+						} else if(selectedPreconfiguration.equals("Weekender")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/Weekender.csv");
+						} else if(selectedPreconfiguration.equals("25P3H1V0.2")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/25P3H1V0.2.csv");
+						} else if(selectedPreconfiguration.equals("44P5H2V0")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/44P5H2V0.csv");
+						} else if(selectedPreconfiguration.equals("30P5H2V0")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/30P5H2V0.csv");
+						} else if(selectedPreconfiguration.equals("Queen Bee Shuttle")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/QueenBeeShuttle.csv");
+						} else if(selectedPreconfiguration.equals("Tumbler")) {
+							/**Read coordinates from CSV file**/
+							loadConfigurationFile("config/Tumbler.csv");
 						} else if(selectedPreconfiguration.equals("Pulsar")) {
 							/**Read coordinates from CSV file**/
 							loadConfigurationFile("config/Pulsar.csv");
