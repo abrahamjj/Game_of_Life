@@ -38,6 +38,34 @@ public class Controller {
 	/*********ADD AN ACTIONLISTENER TO EVERY BUTTON IN THE VIEW**********/
 	/********************************************************************/
 	public void control() {
+
+		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
+		for (int x=0; x<univerRowSize; x++) {
+			for (int y=0; y<univerColumnSize; y++) {
+				final int xx = x;
+				final int yy = y;
+				view.getPanel(xx, yy).addMouseListener(new MouseAdapter(){
+					public void mouseEntered(MouseEvent me) {
+						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
+							if(view.getPanelState(xx, yy) == State.DEAD) {
+								view.setPanelState(xx, yy, State.ALIVE);
+								System.out.println(xx +","+yy);
+							}
+						}
+					}
+
+					public void mousePressed(MouseEvent me) {
+						if(view.getPanelState(xx, yy) == State.DEAD) {
+							view.setPanelState(xx, yy, State.ALIVE);
+							System.out.println(xx +","+yy);
+						} else {
+							view.setPanelState(xx, yy, State.DEAD);
+						}
+					}
+				});
+			}
+		}
+
 		view.getStepButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {                  
 				updateUniverse();
@@ -121,83 +149,27 @@ public class Controller {
 		});
 
 		view.getPreconfigurationComboBox().addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent actionEvent) {
-					/**Only set preconfiguration if one of the preconfiguration options is selected**/
-					if (view.getPreconfigurationComboBox().getSelectedIndex() > 0) {
-						String selectedPreconfiguration =
-						view.getPreconfigurationComboBox().getSelectedItem().toString();
-						if(selectedPreconfiguration.equals("Horizontal Line")) {
-							for(int y=0; y<univerColumnSize; y++) {
-								view.setPanelState(univerRowSize/2, y, State.ALIVE);
-							}
-						} else if(selectedPreconfiguration.equals("Vertical Line")) {
-							for(int x=0; x<univerRowSize; x++) {
-								view.setPanelState(x, univerColumnSize/2, State.ALIVE);
-							}
-						} else if(selectedPreconfiguration.equals("Glider")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/Glider.csv");
-						} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/GosperGliderGun.csv");
-						} else if(selectedPreconfiguration.equals("Lightweight Spaceship")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/LightweightSpaceship.csv");
-						} else if(selectedPreconfiguration.equals("Weekender")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/Weekender.csv");
-						} else if(selectedPreconfiguration.equals("25P3H1V0.2")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/25P3H1V0.2.csv");
-						} else if(selectedPreconfiguration.equals("44P5H2V0")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/44P5H2V0.csv");
-						} else if(selectedPreconfiguration.equals("30P5H2V0")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/30P5H2V0.csv");
-						} else if(selectedPreconfiguration.equals("Queen Bee Shuttle")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/QueenBeeShuttle.csv");
-						} else if(selectedPreconfiguration.equals("Tumbler")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/Tumbler.csv");
-						} else if(selectedPreconfiguration.equals("Pulsar")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/Pulsar.csv");
-						} else if(selectedPreconfiguration.equals("Pentadecathlon")) {
-							/**Read coordinates from CSV file**/
-							loadConfigurationFile("config/Pentadecathlon.csv");
-						}
-					}
+			public void actionPerformed(ActionEvent actionEvent) {
+				/**Only set preconfiguration if one of the preconfiguration options is selected**/
+				if (view.getPreconfigurationComboBox().getSelectedIndex() > 0) {
+					/**Read coordinates from CSV file**/
+					String selectedPreconfiguration = view.getPreconfigurationComboBox().getSelectedItem().toString();
+					if(selectedPreconfiguration.equals("Horizontal Line")) { loadConfigurationFile("config/HorizontalLine.csv"); }
+					else if(selectedPreconfiguration.equals("Vertical Line")) { loadConfigurationFile("config/VerticalLine.csv"); }
+					else if(selectedPreconfiguration.equals("Glider")) { loadConfigurationFile("config/Glider.csv"); }
+					else if(selectedPreconfiguration.equals("Gosper Glider Gun")) { loadConfigurationFile("config/GosperGliderGun.csv"); }
+					else if(selectedPreconfiguration.equals("Lightweight Spaceship")) { loadConfigurationFile("config/LightweightSpaceship.csv"); }
+					else if(selectedPreconfiguration.equals("Weekender")) { loadConfigurationFile("config/Weekender.csv"); }
+					else if(selectedPreconfiguration.equals("25P3H1V0.2")) { loadConfigurationFile("config/25P3H1V0.2.csv"); }
+					else if(selectedPreconfiguration.equals("44P5H2V0")) { loadConfigurationFile("config/44P5H2V0.csv"); }
+					else if(selectedPreconfiguration.equals("30P5H2V0")) { loadConfigurationFile("config/30P5H2V0.csv"); }
+					else if(selectedPreconfiguration.equals("Queen Bee Shuttle")) { loadConfigurationFile("config/QueenBeeShuttle.csv"); }
+					else if(selectedPreconfiguration.equals("Tumbler")) { loadConfigurationFile("config/Tumbler.csv"); }
+					else if(selectedPreconfiguration.equals("Pulsar")) { loadConfigurationFile("config/Pulsar.csv"); }
+					else if(selectedPreconfiguration.equals("Pentadecathlon")) { loadConfigurationFile("config/Pentadecathlon.csv"); }
 				}
-		});
-
-		/**ADD AN ACTIONLISTENER TO EVERY JPANEL TO DETECT STATE CHANGES BY THE USER**/
-		for (int x=0; x<univerRowSize; x++) {
-			for (int y=0; y<univerColumnSize; y++) {
-				final int xx = x;
-				final int yy = y;
-				view.getPanel(xx, yy).addMouseListener(new MouseAdapter(){
-					public void mouseEntered(MouseEvent me) {
-						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
-							if(view.getPanelState(xx, yy) == State.DEAD) {
-								view.setPanelState(xx, yy, State.ALIVE);
-								System.out.println(xx +","+yy);
-							}
-						}
-					}
-
-					public void mousePressed(MouseEvent me) {
-						if(view.getPanelState(xx, yy) == State.DEAD) {
-							view.setPanelState(xx, yy, State.ALIVE);
-							System.out.println(xx +","+yy);
-						} else {
-							view.setPanelState(xx, yy, State.DEAD);
-						}
-					}
-				});
 			}
-		}
+		});
 	}
 
 	/********************************************************************/

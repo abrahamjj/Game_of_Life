@@ -28,7 +28,7 @@ public class View {
 
 	/**Global Constants**/
 	final int UNIVERSE_SIZE_X = 55;
-	final int UNIVERSE_SIZE_Y = 61;
+	final int UNIVERSE_SIZE_Y = 70;	
 	final Color ALIVE_CELL_COLOR = new Color(0, 0, 0);
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
 
@@ -37,7 +37,7 @@ public class View {
 	JLabel generationLabel;
 	JPanel[][] universe = new JPanel[UNIVERSE_SIZE_X][UNIVERSE_SIZE_Y];
 	JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
-	JComboBox<String> preconfigurationComboBox, autoFillComboBox;
+	JComboBox<String> colorComboBox, autoFillComboBox, preconfigurationComboBox;
 
 	public View() {
 		
@@ -85,6 +85,12 @@ public class View {
 		stopSimulation.setFont(new Font("Serif", Font.BOLD, 10));
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
+
+		String[] colorOptions = { "Color", "Black", "Red", "Green", "Blue"};
+		colorComboBox = new JComboBox<String>(colorOptions);
+		colorComboBox.setFont(new Font("Serif", Font.BOLD, 10));
+		colorComboBox.setMaximumRowCount(colorComboBox.getModel().getSize());
+
 		String[] configurationOptions = { "Pre-Configurations","Horizontal Line","Vertical Line",
 										  "Glider","Gosper Glider Gun","Lightweight Spaceship","Weekender",
 										  "25P3H1V0.2","44P5H2V0","30P5H2V0","Queen Bee Shuttle","Tumbler","Pulsar",
@@ -92,10 +98,12 @@ public class View {
 		preconfigurationComboBox = new JComboBox<String>(configurationOptions);
 		preconfigurationComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		preconfigurationComboBox.setMaximumRowCount(preconfigurationComboBox.getModel().getSize());
+
 		String[] autoFillOptions = { "Autofill", "10%", "20%", "30%", "40%",
 							        "50%", "60%", "70%", "80%", "90%" };
 		autoFillComboBox = new JComboBox<String>(autoFillOptions);
 		autoFillComboBox.setFont(new Font("Serif", Font.BOLD, 10));
+		autoFillComboBox.setMaximumRowCount(autoFillComboBox.getModel().getSize());
 		generationLabel = new JLabel("<html><font color='rgb(0,200,0)'>Generation: 0</font></html>");
 		generationLabel.setFont(new Font("Serif", Font.BOLD, 12));
 		northBorderPanel.add(simSpeedLabel);
@@ -104,8 +112,9 @@ public class View {
 		northBorderPanel.add(runSimButton);
 		northBorderPanel.add(stopSimulation);
 		northBorderPanel.add(clearSimButton);
-		northBorderPanel.add(preconfigurationComboBox);
+		northBorderPanel.add(colorComboBox);
 		northBorderPanel.add(autoFillComboBox);
+		northBorderPanel.add(preconfigurationComboBox);
 		northBorderPanel.add(generationLabel);
 		northBorderPanel.setBackground(DEAD_CELL_COLOR);
 		mainFrame.add(northBorderPanel, BorderLayout.NORTH);
