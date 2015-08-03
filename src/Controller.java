@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -132,6 +133,36 @@ public class Controller {
 			}
 		});
 
+		view.getColorComboBox().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				/**Only change color of alive cells if one of the color options is selected and not the Color label**/
+				String selectedColor = view.getColorComboBox().getSelectedItem().toString();
+				if (view.getColorComboBox().getSelectedIndex() > 0) {
+					if (selectedColor.equals("Black")) {
+						view.setPanelColor(new Color(0,0,0));
+					} else if (selectedColor.equals("White")) {
+						view.setPanelColor(new Color(255,255,255));
+					} else if (selectedColor.equals("Red")) {
+						view.setPanelColor(new Color(200,0,0));
+					} else if (selectedColor.equals("Green")) {
+						view.setPanelColor(new Color(0,200,0));
+					} else if (selectedColor.equals("Blue")) {
+						view.setPanelColor(new Color(0,0,200));
+					} else if (selectedColor.equals("Orange")) {
+						view.setPanelColor(new Color(255,100,0));
+					} else if (selectedColor.equals("Yellow")) {
+						view.setPanelColor(new Color(255,255,0));
+					} else if (selectedColor.equals("Indigo")) {
+						view.setPanelColor(new Color(75,0,130	));
+					} else if (selectedColor.equals("Violet")) {
+						view.setPanelColor(new Color(238,130,238));
+					} else if (selectedColor.equals("Purple")) {
+						view.setPanelColor(new Color(160,32,240));
+					}
+				}
+			}
+		});
+
 		view.getAutoFillComboBox().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				/**Only autofill if one of the percentage options is selected and not the AutoFill label**/
@@ -182,11 +213,11 @@ public class Controller {
 	* Game of Life.
 	*/
 	private void updateUniverse() {
-		State[][] new_universe = new State[univerRowSize][univerColumnSize];
+		State[][] new_temp_universe = new State[univerRowSize][univerColumnSize];
 
 		for (int x=0; x<univerRowSize; x++) {
 			for (int y=0; y<univerColumnSize; y++) {
-				new_universe[x][y] = State.DEAD;
+				new_temp_universe[x][y] = State.DEAD;
 			}
 		}
 
@@ -195,24 +226,21 @@ public class Controller {
 				if ( view.getPanelState(x, y) == State.DEAD ) {
 					/**1. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.**/
 					if (getNumLiveNeighbors(x, y) == 3) {
-						new_universe[x][y]  = State.ALIVE;
+						new_temp_universe[x][y]  = State.ALIVE;
 					}
 				}
-
 				if ( view.getPanelState(x, y) == State.ALIVE ) {
 					/**2. Any live cell with fewer than two live neighbours dies, as if caused by under-population.**/
 					if (getNumLiveNeighbors(x, y) < 2) {
-						new_universe[x][y]  = State.DEAD;
+						new_temp_universe[x][y]  = State.DEAD;
 					}
-
 					/**3. Any live cell with two or three live neighbours lives on to the next generation.**/
 					if (getNumLiveNeighbors(x, y) == 2 || getNumLiveNeighbors(x, y) == 3) {
-						new_universe[x][y]  = State.ALIVE;
+						new_temp_universe[x][y]  = State.ALIVE;
 					}
-
 					/**4. Any live cell with more than three live neighbours dies, as if by overcrowding.**/
 					if (getNumLiveNeighbors(x, y) > 3) {
-						new_universe[x][y]  = State.DEAD;
+						new_temp_universe[x][y]  = State.DEAD;
 					}
 				}
 			}
@@ -220,7 +248,7 @@ public class Controller {
 
 		for (int x=0; x<univerRowSize; x++) {
 			for (int y=0; y<univerColumnSize; y++) {
-				if (new_universe[x][y] == State.DEAD) {
+				if (new_temp_universe[x][y] == State.DEAD) {
 					view.setPanelState(x, y, State.DEAD);
 				} else {
 					view.setPanelState(x, y, State.ALIVE);

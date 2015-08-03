@@ -8,7 +8,7 @@ public class GameOfLife {
 
 	public static void main(String[] args) {
 
-		final View view = new View();
+		View view = new View();
 		Controller controller = new Controller(view);
 		controller.control();
 	}

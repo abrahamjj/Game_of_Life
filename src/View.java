@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -27,15 +26,15 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class View {
 
 	/**Global Constants**/
-	final int UNIVERSE_SIZE_X = 55;
-	final int UNIVERSE_SIZE_Y = 70;	
-	final Color ALIVE_CELL_COLOR = new Color(0, 0, 0);
+	final int UNIVERSE_SIZE_ROWS = 65;
+	final int UNIVERSE_SIZE_COLUMNS = 100;
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
+	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
 
 	/**Global variables**/
 	JSlider slider;
 	JLabel generationLabel;
-	JPanel[][] universe = new JPanel[UNIVERSE_SIZE_X][UNIVERSE_SIZE_Y];
+	JPanel[][] universe = new JPanel[UNIVERSE_SIZE_ROWS][UNIVERSE_SIZE_COLUMNS];
 	JButton stepSimbutton, runSimButton, clearSimButton, stopSimulation;
 	JComboBox<String> colorComboBox, autoFillComboBox, preconfigurationComboBox;
 
@@ -86,7 +85,7 @@ public class View {
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
 
-		String[] colorOptions = { "Color", "Black", "Red", "Green", "Blue"};
+		String[] colorOptions = { "Color", "Black", "White", "Red", "Green", "Blue", "Orange", "Yellow", "Indigo", "Violet", "Purple"};
 		colorComboBox = new JComboBox<String>(colorOptions);
 		colorComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		colorComboBox.setMaximumRowCount(colorComboBox.getModel().getSize());
@@ -123,12 +122,13 @@ public class View {
 		* Add a grid to center panel of the main frame as a startup default.
 		* Update the center panel on each iteration after simulation is started.
 		*/
-		centerPanel = new JPanel(new GridLayout(UNIVERSE_SIZE_X, UNIVERSE_SIZE_Y));
-		for(int x=0; x<UNIVERSE_SIZE_X; x++) {
-			for(int y=0; y<UNIVERSE_SIZE_Y; y++) {
+		centerPanel = new JPanel(new GridLayout(UNIVERSE_SIZE_ROWS, UNIVERSE_SIZE_COLUMNS));
+		for(int x=0; x<UNIVERSE_SIZE_ROWS; x++) {
+			for(int y=0; y<UNIVERSE_SIZE_COLUMNS; y++) {
 				universe[x][y] = new JPanel();
 				universe[x][y].setBackground(DEAD_CELL_COLOR);
 				universe[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				universe[x][y].setPreferredSize(new Dimension(10,10));
 				centerPanel.add( universe[x][y] );
 			}
 		}
@@ -174,6 +174,10 @@ public class View {
 		return stopSimulation;
 	}
 
+	public JComboBox getColorComboBox() {
+		return colorComboBox;
+	}
+
 	public JComboBox getAutoFillComboBox() {
 		return autoFillComboBox;
 	}
@@ -203,15 +207,25 @@ public class View {
 			universe[x][y].setBackground(ALIVE_CELL_COLOR);
 	}
 
+	public void setPanelColor(Color newAliveCellColor) {
+		for(int x=0; x<UNIVERSE_SIZE_ROWS; x++) {
+			for(int y=0; y<UNIVERSE_SIZE_COLUMNS; y++) {
+				if(universe[x][y].getBackground() != DEAD_CELL_COLOR) {
+					universe[x][y].setBackground(newAliveCellColor);
+				}
+			}
+		}
+	}
+
 	public void setGenerationText(int generationNum) {
 		generationLabel.setText("<html><font color='rgb(0,200,0)'>Generation: "+generationNum+"</font></html>");
 	}
 
 	public int getUniverseSizeRows() {
-		return UNIVERSE_SIZE_X;
+		return UNIVERSE_SIZE_ROWS;
 	}
 
 	public int getUniverseSizeColumns() {
-		return UNIVERSE_SIZE_Y;
+		return UNIVERSE_SIZE_COLUMNS;
 	}
 }
