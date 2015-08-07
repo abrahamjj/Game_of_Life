@@ -29,7 +29,7 @@ public class View {
 	final int UNIVERSE_SIZE_ROWS = 65;
 	final int UNIVERSE_SIZE_COLUMNS = 100;
 	final Color DEAD_CELL_COLOR = new Color(64, 64, 64);
-	final Color ALIVE_CELL_COLOR = new Color(0, 200, 0);
+	Color ALIVE_CELL_COLOR = new Color(0, 255, 0);
 
 	/**Global variables**/
 	JSlider slider;
@@ -69,7 +69,7 @@ public class View {
 		* Add configuration and simulation control tools to North border..
 		*/
 		northBorderPanel = new JPanel(new FlowLayout());
-		simSpeedLabel = new JLabel("<html><font color='rgb(0,200,0)'>Speed (Hz):</font></html>");
+		simSpeedLabel = new JLabel("<html><font color='rgb(0,200,0)'>Simulation Speed (Hz):</font></html>");
 		simSpeedLabel.setFont(new Font("Serif", Font.BOLD, 12));
 		simSpeedLabel.setBackground(Color.GREEN);
 		slider = new JSlider(JSlider.HORIZONTAL, 1, 30, 1);
@@ -85,7 +85,8 @@ public class View {
 		clearSimButton = new JButton("Clear");
 		clearSimButton.setFont(new Font("Serif", Font.BOLD, 10));
 
-		String[] colorOptions = { "Color", "Black", "White", "Red", "Green", "Blue", "Orange", "Yellow", "Indigo", "Violet", "Purple"};
+		String[] colorOptions = { "Color", "Black", "White", "Red", "Green", "Blue", "Orange",
+								  "Yellow", "Indigo", "Violet", "Purple"};
 		colorComboBox = new JComboBox<String>(colorOptions);
 		colorComboBox.setFont(new Font("Serif", Font.BOLD, 10));
 		colorComboBox.setMaximumRowCount(colorComboBox.getModel().getSize());
@@ -193,14 +194,22 @@ public class View {
 	/**********************************************/
 	/******FOR CELL COLOR/STATE MANIPULATION*******/
 	/**********************************************/
+	public int getUniverseSizeRows() {
+		return UNIVERSE_SIZE_ROWS;
+	}
+
+	public int getUniverseSizeColumns() {
+		return UNIVERSE_SIZE_COLUMNS;
+	}
+
 	public State getPanelState(int x, int y) {
 		if(universe[x][y].getBackground() == DEAD_CELL_COLOR)
 			return State.DEAD;
 		else
 			return State.ALIVE;
 	}
- 
-	public void setPanelState(int x, int y, State state) {
+
+ 	public void setPanelState(int x, int y, State state) {
 		if(state == State.DEAD)
 			universe[x][y].setBackground(DEAD_CELL_COLOR);
 		else
@@ -208,24 +217,12 @@ public class View {
 	}
 
 	public void setPanelColor(Color newAliveCellColor) {
-		for(int x=0; x<UNIVERSE_SIZE_ROWS; x++) {
-			for(int y=0; y<UNIVERSE_SIZE_COLUMNS; y++) {
-				if(universe[x][y].getBackground() != DEAD_CELL_COLOR) {
-					universe[x][y].setBackground(newAliveCellColor);
-				}
-			}
-		}
+		ALIVE_CELL_COLOR = newAliveCellColor;
 	}
 
 	public void setGenerationText(int generationNum) {
-		generationLabel.setText("<html><font color='rgb(0,200,0)'>Generation: "+generationNum+"</font></html>");
-	}
-
-	public int getUniverseSizeRows() {
-		return UNIVERSE_SIZE_ROWS;
-	}
-
-	public int getUniverseSizeColumns() {
-		return UNIVERSE_SIZE_COLUMNS;
+		generationLabel.setText("<html><font " +
+			"color='rgb(0,200,0)'>Generation: "+
+			generationNum+"</font></html>");
 	}
 }

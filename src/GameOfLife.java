@@ -1,5 +1,5 @@
 /**
-* GameOfLife: main program
+* GameOfLife: main class
 *
 * @author John Abraham
 */

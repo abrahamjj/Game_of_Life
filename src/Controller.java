@@ -46,6 +46,15 @@ public class Controller {
 				final int xx = x;
 				final int yy = y;
 				view.getPanel(xx, yy).addMouseListener(new MouseAdapter(){
+					public void mousePressed(MouseEvent me) {
+						if(view.getPanelState(xx, yy) == State.DEAD) {
+							view.setPanelState(xx, yy, State.ALIVE);
+							System.out.println(xx +","+yy);
+						} else {
+							view.setPanelState(xx, yy, State.DEAD);
+							}
+					}
+
 					public void mouseEntered(MouseEvent me) {
 						if(me.getModifiers() == MouseEvent.BUTTON1_MASK) {
 							if(view.getPanelState(xx, yy) == State.DEAD) {
@@ -54,21 +63,12 @@ public class Controller {
 							}
 						}
 					}
-
-					public void mousePressed(MouseEvent me) {
-						if(view.getPanelState(xx, yy) == State.DEAD) {
-							view.setPanelState(xx, yy, State.ALIVE);
-							System.out.println(xx +","+yy);
-						} else {
-							view.setPanelState(xx, yy, State.DEAD);
-						}
-					}
 				});
 			}
 		}
 
 		view.getStepButton().addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {                  
+			public void actionPerformed(ActionEvent actionEvent) {
 				updateUniverse();
 				view.setGenerationText( ++generationNum );
 			}
@@ -92,7 +92,7 @@ public class Controller {
 						while(isThreadRunning) {
 							updateUniverse();
 							view.setGenerationText( ++generationNum );
-							/**pause this seperate thread for the simulation delay**/
+							/**Pause this seperate thread for a simulation delay**/
 							/*******************************************************
 							* From the JSlider we're getting 1...20 Integers
 							* Thread.sleep() takes in long 1000 for 1 Hz updates because 1000ms = 1s
@@ -153,7 +153,7 @@ public class Controller {
 					} else if (selectedColor.equals("Yellow")) {
 						view.setPanelColor(new Color(255,255,0));
 					} else if (selectedColor.equals("Indigo")) {
-						view.setPanelColor(new Color(75,0,130	));
+						view.setPanelColor(new Color(75,0,130));
 					} else if (selectedColor.equals("Violet")) {
 						view.setPanelColor(new Color(238,130,238));
 					} else if (selectedColor.equals("Purple")) {
@@ -185,19 +185,33 @@ public class Controller {
 				if (view.getPreconfigurationComboBox().getSelectedIndex() > 0) {
 					/**Read coordinates from CSV file**/
 					String selectedPreconfiguration = view.getPreconfigurationComboBox().getSelectedItem().toString();
-					if(selectedPreconfiguration.equals("Horizontal Line")) { loadConfigurationFile("config/HorizontalLine.csv"); }
-					else if(selectedPreconfiguration.equals("Vertical Line")) { loadConfigurationFile("config/VerticalLine.csv"); }
-					else if(selectedPreconfiguration.equals("Glider")) { loadConfigurationFile("config/Glider.csv"); }
-					else if(selectedPreconfiguration.equals("Gosper Glider Gun")) { loadConfigurationFile("config/GosperGliderGun.csv"); }
-					else if(selectedPreconfiguration.equals("Lightweight Spaceship")) { loadConfigurationFile("config/LightweightSpaceship.csv"); }
-					else if(selectedPreconfiguration.equals("Weekender")) { loadConfigurationFile("config/Weekender.csv"); }
-					else if(selectedPreconfiguration.equals("25P3H1V0.2")) { loadConfigurationFile("config/25P3H1V0.2.csv"); }
-					else if(selectedPreconfiguration.equals("44P5H2V0")) { loadConfigurationFile("config/44P5H2V0.csv"); }
-					else if(selectedPreconfiguration.equals("30P5H2V0")) { loadConfigurationFile("config/30P5H2V0.csv"); }
-					else if(selectedPreconfiguration.equals("Queen Bee Shuttle")) { loadConfigurationFile("config/QueenBeeShuttle.csv"); }
-					else if(selectedPreconfiguration.equals("Tumbler")) { loadConfigurationFile("config/Tumbler.csv"); }
-					else if(selectedPreconfiguration.equals("Pulsar")) { loadConfigurationFile("config/Pulsar.csv"); }
-					else if(selectedPreconfiguration.equals("Pentadecathlon")) { loadConfigurationFile("config/Pentadecathlon.csv"); }
+					if(selectedPreconfiguration.equals("Horizontal Line")) {
+						loadConfigurationFile("config/HorizontalLine.csv");
+					} else if(selectedPreconfiguration.equals("Vertical Line")) {
+						loadConfigurationFile("config/VerticalLine.csv");
+					} else if(selectedPreconfiguration.equals("Glider")) {
+						loadConfigurationFile("config/Glider.csv");
+					} else if(selectedPreconfiguration.equals("Gosper Glider Gun")) {
+						loadConfigurationFile("config/GosperGliderGun.csv");
+					} else if(selectedPreconfiguration.equals("Lightweight Spaceship")) {
+						loadConfigurationFile("config/LightweightSpaceship.csv");
+					} else if(selectedPreconfiguration.equals("Weekender")) {
+						loadConfigurationFile("config/Weekender.csv");
+					} else if(selectedPreconfiguration.equals("25P3H1V0.2")) {
+						loadConfigurationFile("config/25P3H1V0.2.csv");
+					} else if(selectedPreconfiguration.equals("44P5H2V0")) {
+						loadConfigurationFile("config/44P5H2V0.csv");
+					} else if(selectedPreconfiguration.equals("30P5H2V0")) {
+						loadConfigurationFile("config/30P5H2V0.csv");
+					} else if(selectedPreconfiguration.equals("Queen Bee Shuttle")) {
+						loadConfigurationFile("config/QueenBeeShuttle.csv");
+					} else if(selectedPreconfiguration.equals("Tumbler")) {
+						loadConfigurationFile("config/Tumbler.csv");
+					} else if(selectedPreconfiguration.equals("Pulsar")) {
+						loadConfigurationFile("config/Pulsar.csv");
+					} else if(selectedPreconfiguration.equals("Pentadecathlon")) {
+						loadConfigurationFile("config/Pentadecathlon.csv");
+					}
 				}
 			}
 		});
