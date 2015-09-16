@@ -151,10 +151,10 @@ public class View {
 
 	}
 
-	/*************************************************/
-	/**CONTROLLER NEEDS ACCESS TO JCOMPONENTS TO ADD**/
-	/**ACTIONLISTENERS AND EVENT HANDLERS TO THEM*****/
-	/*************************************************/
+	/*******************************************************/
+	/**THE CONTROLLER CLASS NEEDS ACCESS TO JCOMPONENTS TO**/
+	/** ADD ACTIONLISTENERS AND EVENT HANDLERS TO THEM******/
+	/*******************************************************/
 	public int getSliderValue() {
 		return slider.getValue();
 	}
@@ -192,7 +192,7 @@ public class View {
 	}
 
 	/**********************************************/
-	/******FOR CELL COLOR/STATE MANIPULATION*******/
+	/******FOR CELL COLOR/STATE MANIPULATIONS******/
 	/**********************************************/
 	public int getUniverseSizeRows() {
 		return UNIVERSE_SIZE_ROWS;

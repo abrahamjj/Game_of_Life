@@ -1,6 +1,6 @@
 /**
 * Controller: alters the state of the view.
-* All calculations and event handling happens here.
+* All event handling and calculations happen here.
 * 
 * @author John Abraham
 */
@@ -95,7 +95,7 @@ public class Controller {
 							/**Pause this seperate thread for a simulation delay**/
 							/*******************************************************
 							* From the JSlider we're getting 1...20 Integers
-							* Thread.sleep() takes in long 1000 for 1 Hz updates because 1000ms = 1s
+							* Thread.sleep() takes in 1000 (long val) for 1 Hz updates because 1000ms = 1s
 							* To convert 1...20 Integers to 1...20 Hz we use f(x) = 1000*(1/x)
 							* (x representing the jSlider integer values)
 							**/
