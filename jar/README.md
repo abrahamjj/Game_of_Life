@@ -1,1 +1,3 @@
-Enter <u>java -jar GameOfLife.jar</u> into your command-line to run. No need for additional parameters.<br>
+#How to Run#
+
+Enter **_java -jar GameOfLife.jar_** into your command-line to run. No need for additional parameters.<br>
