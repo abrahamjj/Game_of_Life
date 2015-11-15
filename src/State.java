@@ -6,5 +6,5 @@
 
 public enum State {
 
-	ALIVE, DEAD
+   ALIVE, DEAD
 }
