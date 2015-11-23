@@ -5,5 +5,5 @@ Project is still under development. I plan on running some performance tests, op
 
 ![alt tag](https://raw.githubusercontent.com/abrahamjj/Game_of_Life/master/screenshots/screenshot1.png)
 <br>
-![alt tag](https://raw.githubusercontent.com/abrahamjj/Game_of_Life/master/screenshots/screenshot1.png)
+![alt tag](https://raw.githubusercontent.com/abrahamjj/Game_of_Life/master/screenshots/screenshot2.png)
 
