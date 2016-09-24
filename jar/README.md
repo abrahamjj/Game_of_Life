@@ -1,5 +1,5 @@
 #How to Run#
 
 ```
-_java -jar GameOfLife.jar_
+java -jar GameOfLife.jar
 ```
